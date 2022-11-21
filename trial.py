@@ -7,17 +7,16 @@ pygame.init()
 # gui 창 만들기
 root = Tk()
 root.title("piano")
-root.geometry('1920x700+0+0')
+root.geometry('1700x700+0+0')
 
-frame = Frame(root, bg="medium purple", bd=20, relief=RIDGE)
-frame.grid()
+frame1 = Frame(root, bg="medium purple", bd=20, relief=RIDGE)
+frame1.place(x=300, y=0)
+frame3 = Frame(root, bg="white", relief=FLAT)
+frame3.place(x=0, y=200)
+frame2 = Frame(root, bg="white", relief=FLAT)
+frame2.place(x=44, y=200)
 
-frame1 = Frame(frame, bg="medium purple", bd=20, relief=RIDGE)
-frame1.grid()
-frame2 = Frame(frame, bg="medium purple", relief=FLAT)
-frame2.grid()
-frame3 = Frame(frame, bg="medium purple", relief=FLAT)
-frame3.grid()
+
 
 str1 = StringVar()
 str1.set("Just Like Music")
@@ -106,13 +105,21 @@ txtTime = Entry(frame1, textvariable=Time1, font=('arial', 18, 'bold'), bd=34, b
 
 #===============================백건 버튼====================================
 ButtonWidth = 3
-ButtonHeight = 4
-
+ButtonHeight = 8
+'''
 class Btn:
       def __init__(self, note, col):
             self.note = note
             self.col = col
-            self.btn = Button(frame1, width=ButtonWidth, height=ButtonHeight, text=note, font=('arial',25,'bold'),
+            self.btn = Button(frame3, width=ButtonWidth, height=ButtonHeight, text=note, font=('arial',25,'bold'),
+                              bd=5, bg="white", command=lambda :value_note_Click(note), fg="black")
+            self.btn.grid(row=1, column=col)
+'''
+class Btn:
+      def __init__(self, note, col):
+            self.note = note
+            self.col = col
+            self.btn = Button(frame3, width=ButtonWidth, height=ButtonHeight, text="\n\n\n"+note, font=('arial',25,'bold'),
                               bd=5, bg="white", command=lambda :value_note_Click(note), fg="black")
             self.btn.grid(row=1, column=col)
 
@@ -140,7 +147,7 @@ class Btn_Sharp:
                   self.btn.grid(row=0, column=col)
             else:
                   self.btn = Button(frame2, width=BlankSpaceWidth, height=SharpButtonHeight,
-                                    state=DISABLED, bg="medium purple", relief=FLAT, fg="white")
+                                    state=DISABLED, relief=FLAT, bg="white")
                   self.btn.grid(row=0, column=col)
 
 notes_sharp = ["C3#", "D3#", None, "F3#", "G3#", "A3#", None, "C4#", "D4#", None,
