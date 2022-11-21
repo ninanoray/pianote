@@ -1,4 +1,3 @@
-from pygame import mixer
 import vlc
 import time
 
