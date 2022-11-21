@@ -9,14 +9,13 @@ root = Tk()
 root.title("piano")
 root.geometry('1700x700+0+0')
 
-frame1 = Frame(root, bg="medium purple", bd=20, relief=RIDGE)
-frame1.place(x=300, y=0)
-frame3 = Frame(root, bg="white", relief=FLAT)
-frame3.place(x=0, y=200)
-frame2 = Frame(root, bg="white", relief=FLAT)
-frame2.place(x=44, y=200)
+frame = Frame(root, bg="medium purple", bd=20, relief=RIDGE)
+frame.grid()
 
-
+frame1 = Frame(frame, bg="medium purple", bd=20, relief=RIDGE)
+frame1.grid()
+frame3 = Frame(frame, bg="white", relief=FLAT)
+frame3.grid()
 
 str1 = StringVar()
 str1.set("Just Like Music")
@@ -121,7 +120,7 @@ class Btn:
             self.col = col
             self.btn = Button(frame3, width=ButtonWidth, height=ButtonHeight, text="\n\n\n"+note, font=('arial',25,'bold'),
                               bd=5, bg="white", command=lambda :value_note_Click(note), fg="black")
-            self.btn.grid(row=1, column=col)
+            self.btn.grid(row=0, column=col)
 
 notes = ["C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4",
          "F4", "G4", "A4", "B4", "C5", "D5", "E5", "F5", "G5", "A5", "B5"]
@@ -141,14 +140,14 @@ class Btn_Sharp:
             self.col = col
 
             if (note is not None):
-                  self.btn = Button(frame2, width=SharpButtonWidth, height=SharpButtonHeight,
+                  self.btn = Button(frame3, width=SharpButtonWidth, height=SharpButtonHeight,
                                     text=note, font=('arial',25,'bold'), bd=5, bg="black",
                                     command=lambda :value_note_Click(note.replace('#','s')), fg="white")
-                  self.btn.grid(row=0, column=col)
+                  self.btn.place(x = 76*col - 1560, y=0)
             else:
-                  self.btn = Button(frame2, width=BlankSpaceWidth, height=SharpButtonHeight,
+                  self.btn = Button(frame3, width=BlankSpaceWidth, height=0,
                                     state=DISABLED, relief=FLAT, bg="white")
-                  self.btn.grid(row=0, column=col)
+                  self.btn.place(x = 76*col - 1560, y=0)
 
 notes_sharp = ["C3#", "D3#", None, "F3#", "G3#", "A3#", None, "C4#", "D4#", None,
                "F4#", "G4#", "A4#", None, "C5#", "D5#", None, "F5#", "G5#", "A5#"]
