@@ -31,38 +31,50 @@ class Piano_GUI:
         self.small_font = small_font
         self.real_small_font = real_small_font
 
-        #키설정
+        self.update_keys_set()
+
+    def set_left_oct(self, oct):
+        self.left_oct = oct
+    def get_left_oct(self):
+        return self.left_oct
+
+    def set_right_oct(self, oct):
+        self.right_oct = oct
+    def get_right_oct(self):
+        return self.right_oct
+
+    def update_keys_set(self): # 키설정 업데이트
         self.left_dict = {'Z': f'C{self.left_oct}',
-                     'S': f'C{self.left_oct}s',
-                     'X': f'D{self.left_oct}',
-                     'D': f'D{self.left_oct}s',
-                     'C': f'E{self.left_oct}',
-                     'V': f'F{self.left_oct}',
-                     'G': f'F{self.left_oct}s',
-                     'B': f'G{self.left_oct}',
-                     'H': f'G{self.left_oct}s',
-                     'N': f'A{self.left_oct}',
-                     'J': f'A{self.left_oct}s',
-                     'M': f'B{self.left_oct}'}
+                          'S': f'C{self.left_oct}s',
+                          'X': f'D{self.left_oct}',
+                          'D': f'D{self.left_oct}s',
+                          'C': f'E{self.left_oct}',
+                          'V': f'F{self.left_oct}',
+                          'G': f'F{self.left_oct}s',
+                          'B': f'G{self.left_oct}',
+                          'H': f'G{self.left_oct}s',
+                          'N': f'A{self.left_oct}',
+                          'J': f'A{self.left_oct}s',
+                          'M': f'B{self.left_oct}'}
         self.right_dict = {'W': f'F{self.right_oct - 1}',
-                      '3': f'F{self.right_oct - 1}s',
-                      'E': f'G{self.right_oct - 1}',
-                      '4': f'G{self.right_oct - 1}s',
-                      'R': f'A{self.right_oct - 1}',
-                      '5': f'A{self.right_oct - 1}s',
-                      'T': f'B{self.right_oct - 1}',
-                      'Y': f'C{self.right_oct}',
-                      '7': f'C{self.right_oct}s',
-                      'U': f'D{self.right_oct}',
-                      '8': f'D{self.right_oct}s',
-                      'I': f'E{self.right_oct}',
-                      'O': f'F{self.right_oct}',
-                      '0': f'F{self.right_oct}s',
-                      'P': f'G{self.right_oct}',
-                      '-': f'G{self.right_oct}s',
-                      '[': f'A{self.right_oct}',
-                      '=': f'A{self.right_oct}s',
-                      ']': f'B{self.right_oct}'}
+                           '3': f'F{self.right_oct - 1}s',
+                           'E': f'G{self.right_oct - 1}',
+                           '4': f'G{self.right_oct - 1}s',
+                           'R': f'A{self.right_oct - 1}',
+                           '5': f'A{self.right_oct - 1}s',
+                           'T': f'B{self.right_oct - 1}',
+                           'Y': f'C{self.right_oct}',
+                           '7': f'C{self.right_oct}s',
+                           'U': f'D{self.right_oct}',
+                           '8': f'D{self.right_oct}s',
+                           'I': f'E{self.right_oct}',
+                           'O': f'F{self.right_oct}',
+                           '0': f'F{self.right_oct}s',
+                           'P': f'G{self.right_oct}',
+                           '-': f'G{self.right_oct}s',
+                           '[': f'A{self.right_oct}',
+                           '=': f'A{self.right_oct}s',
+                           ']': f'B{self.right_oct}'}
 
     # 피아노 모양 생성
     def draw_piano(self, whites, blacks):
@@ -288,16 +300,17 @@ if __name__ == '__main__':
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
                     if piano_gui.right_oct < 5:
-                        piano_gui.right_oct += 1
+                        piano_gui.set_right_oct(piano_gui.get_right_oct()+1)
                 if event.key == pygame.K_LEFT:
                     if piano_gui.right_oct > 4:
-                        piano_gui.right_oct -= 1
+                        piano_gui.set_right_oct(piano_gui.get_right_oct()-1)
                 if event.key == pygame.K_UP:
                     if piano_gui.left_oct < 5:
-                        piano_gui.left_oct += 1
+                        piano_gui.set_left_oct(piano_gui.get_left_oct()+1)
                 if event.key == pygame.K_DOWN:
                     if piano_gui.left_oct > 3:
-                        piano_gui.left_oct -= 1
+                        piano_gui.set_left_oct(piano_gui.get_left_oct()-1)
+                piano_gui.update_keys_set()
 
         pygame.display.flip()
 
