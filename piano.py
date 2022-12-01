@@ -17,7 +17,7 @@ active_whites = []
 active_blacks = []
 MIN_OCT = 3 # 최소 옥타브
 left_oct = MIN_OCT + 1
-right_oct = MIN_OCT + 1
+right_oct = MIN_OCT + 2
 
 left_hand = pl.left_hand
 right_hand = pl.right_hand
@@ -33,6 +33,7 @@ real_small_font = pygame.font.SysFont('arial', 10)
 
 #########################################################
 
+#GUI 제목/설명
 def draw_title_bar():
     instruction_text = medium_font.render('Up/Down Key Change Left Hand octave', True, 'black')
     screen.blit(instruction_text, (WIDTH - 480, 10))
@@ -60,12 +61,12 @@ def draw_piano(whites, blacks):
         pygame.draw.rect(screen, 'black', [i*white_w, HEIGHT-white_h, white_w, white_h], 2, 2)
         # 노트 이름 텍스트
         key_label = small_font.render(white_notes[i], True, 'black')
-        screen.blit(key_label, (i * white_w + 3, HEIGHT - 20))
+        screen.blit(key_label, (i * white_w + 8, HEIGHT - 20))
     # 키 누름 표시
     for i in range(len(whites)):
         if whites[i][1] > 0:
             j = whites[i][0]
-            pygame.draw.rect(screen, 'green', [j*white_w, HEIGHT-black_h, white_w, black_h], 2, 2)
+            pygame.draw.rect(screen, 'green', [j*white_w, HEIGHT-white_h, white_w, white_h], 2, 2)
             whites[i][1] -= 1
 
     # 흑건
@@ -87,7 +88,7 @@ def draw_piano(whites, blacks):
                     blacks[q][1] -= 1
         # 노트 이름 텍스트
         key_label = real_small_font.render(black_labels[i], True, 'white')
-        screen.blit(key_label, (black_w + (i*white_w) + (skip_count*white_w), HEIGHT - 120))
+        screen.blit(key_label, (black_w + (i*white_w) + (skip_count*white_w) + 4, HEIGHT - 120))
         black_rects.append(rect)
         # 흑건 등장 패턴
         skip_track += 1
@@ -104,12 +105,15 @@ def draw_piano(whites, blacks):
 
 # 키설명
 def draw_hands(rightOct, leftOct, rightHand, leftHand):
-    rect_width = 245
-    rect_height = 30
+    rect_w = 35
+    rect_w7 = rect_w * 7
+    rect_w11 = rect_w * 11
+    rect_h = 30
+
     # 왼손
-    pygame.draw.rect(screen, 'dark gray', [((leftOct-MIN_OCT) * 245), HEIGHT - 60, rect_width, rect_height], 0, 4)
-    pygame.draw.rect(screen, 'black', [((leftOct-MIN_OCT) * 245), HEIGHT - 60, rect_width, rect_height], 4, 4)
-    for i in range(12):
+    pygame.draw.rect(screen, 'dark gray', [((leftOct-MIN_OCT) * rect_w7), HEIGHT - 60, rect_w7, rect_h], 0, 4)
+    pygame.draw.rect(screen, 'black', [((leftOct-MIN_OCT) * rect_w7), HEIGHT - 60, rect_w7, rect_h], 4, 4)
+    for i in range(len(leftHand)):
         color = 'white'
         blank_space=10
         if (i==0 or i==2 or i==4 or i==5 or i==7 or i==9 or i==11):
@@ -124,21 +128,23 @@ def draw_hands(rightOct, leftOct, rightHand, leftHand):
         screen.blit(text, (((leftOct-3) * 245) + 18*i + blank_space, HEIGHT - 55))
 
     # 오른손
-    pygame.draw.rect(screen, 'dark gray', [((rightOct-MIN_OCT) * 245), HEIGHT - 90, rect_width, rect_height], 0, 4)
-    pygame.draw.rect(screen, 'black', [((rightOct-MIN_OCT) * 245), HEIGHT - 90, rect_width, rect_height], 4, 4)
-    for i in range(12):
+    pygame.draw.rect(screen, 'dark gray', [((rightOct-MIN_OCT) * rect_w7 - rect_w*4), HEIGHT - 86, rect_w11, rect_h], 0, 4)
+    pygame.draw.rect(screen, 'black', [((rightOct-MIN_OCT) * rect_w7 - rect_w*4), HEIGHT - 86, rect_w11, rect_h], 4, 4)
+    for i in range(len(rightHand)):
         color = 'white'
         blank_space = 10
-        if (i==0 or i==2 or i==4 or i==5 or i==7 or i==9 or i==11):
+        if (i==0 or i==2 or i==4 or i==6 or i==7 or i==9 or i==11 or i==12 or i==14 or i==16 or i==18):
             pass # 백건
         else:
             color = 'black' # 흑건
-        if (i < 5):
+        if (i < 7):
             pass
-        else:
+        elif (i < 12):
             blank_space += 16 # 흑건 없는 부분 띄움
+        else:
+            blank_space += 32 # 흑건 없는 부분 띄움
         text = small_font.render(rightHand[i], True, color)
-        screen.blit(text, (((rightOct - 3) * 245) + 18 * i + blank_space, HEIGHT - 85))
+        screen.blit(text, (((rightOct - 3) * rect_w7 - rect_w*4) + 18 * i + blank_space, HEIGHT - 81))
 
 if __name__ == '__main__':
     pygame.mixer.set_num_channels(50)
@@ -167,18 +173,25 @@ if __name__ == '__main__':
                      'J': f'A{left_oct}s',
                      'M': f'B{left_oct}'}
 
-        right_dict = {'R': f'C{right_oct}',
-                      '5': f'C{right_oct}s',
-                      'T': f'D{right_oct}',
-                      '6': f'D{right_oct}s',
-                      'Y': f'E{right_oct}',
-                      'U': f'F{right_oct}',
-                      '8': f'F{right_oct}s',
-                      'I': f'G{right_oct}',
-                      '9': f'G{right_oct}s',
-                      'O': f'A{right_oct}',
-                      '0': f'A{right_oct}s',
-                      'P': f'B{right_oct}'}
+        right_dict = {'W': f'F{right_oct-1}',
+                      '3': f'F{right_oct-1}s',
+                      'E': f'G{right_oct-1}',
+                      '4': f'G{right_oct-1}s',
+                      'R': f'A{right_oct-1}',
+                      '5': f'A{right_oct-1}s',
+                      'T': f'B{right_oct-1}',
+                      'Y': f'C{right_oct}',
+                      '7': f'C{right_oct}s',
+                      'U': f'D{right_oct}',
+                      '8': f'D{right_oct}s',
+                      'I': f'E{right_oct}',
+                      'O': f'F{right_oct}',
+                      '0' : f'F{right_oct}s',
+                      'P': f'G{right_oct}',
+                      '-': f'G{right_oct}s',
+                      '[': f'A{right_oct}',
+                      '=': f'A{right_oct}s',
+                      ']': f'B{right_oct}'}
 
         timer.tick(fps)
         screen.fill('gray')
@@ -228,7 +241,7 @@ if __name__ == '__main__':
                     if right_oct < 5:
                         right_oct += 1
                 if event.key == pygame.K_LEFT:
-                    if right_oct > 3:
+                    if right_oct > 4:
                         right_oct -= 1
                 if event.key == pygame.K_UP:
                     if left_oct < 5:
