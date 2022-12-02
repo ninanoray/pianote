@@ -33,6 +33,7 @@ class Note: # 음표
         self.set_pitch(pitch)
         self.note = note
         self.set_image()
+        self.X = 10 # note 이미지 X 좌표
 
     def set_pitch(self, name):
         print(name)
@@ -100,6 +101,9 @@ class Note: # 음표
         self.screen.blit(self.image, self.rect)
 
         return self.X
+
+    def set_X(self, x):
+        self.X = x
 
 #GUI 제목/설명
 def draw_title_bar(screen, font, medium_font):
@@ -170,7 +174,9 @@ if __name__ == '__main__':
         screen.fill('gray')
         white_keys, black_keys, active_whites, active_blacks = gui_piano.draw_piano(active_whites, active_blacks)
         gui_piano.draw_hands()
+        # 제목/설명 출력
         draw_title_bar(screen, font, medium_font)
+        # 오선지 그리기
         draw_music_sheet(screen, WIDTH)
 
         for event in pygame.event.get():
@@ -269,11 +275,18 @@ if __name__ == '__main__':
         if input_notes:
             step = 0
             for note in input_notes:
+                # B4이하 음표 8분음표 16분음표 간격 조정
                 if note.get_note() > 4 and note.is_down:
                     step = note.draw_note(step) + (note.WIDTH2-note.WIDTH)/2
                 else:
                     step = note.draw_note(step)
 
+                # 오선지 밖으로 넘어가면 오선지 다시 그림
+                if note.X > WIDTH - note.WIDTH:
+                    draw_music_sheet(screen, WIDTH)
+                    step = 0
+                    note.set_X(10)
+                    step = note.draw_note(step)
 
         pygame.display.flip()
 
