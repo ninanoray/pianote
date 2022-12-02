@@ -29,6 +29,10 @@ class Note: # 음표
     IMG_note_16 = pygame.transform.scale(IMG_note_16, (WIDTH2, HEIGHT))
     IMG_note_16up = pygame.image.load("images/note_sixteenth_up.png")
     IMG_note_16up = pygame.transform.scale(IMG_note_16up, (WIDTH, HEIGHT))
+    IMG_SHARP = pygame.image.load("images/sharp.png")
+    IMG_SHARP = pygame.transform.scale(IMG_SHARP, (37, 14 * 3))
+    IMG_FLAT = pygame.image.load("images/flat.png")
+    IMG_FLAT = pygame.transform.scale(IMG_FLAT, (19, 14 * 3))
 
     def __init__(self, screen, pitch, note=4):
         self.screen = screen
@@ -107,11 +111,18 @@ class Note: # 음표
         level = index_pitch - index_C4
 
         self.rect = self.image.get_rect()
-        self.rect.x = self.X
+
         if self.is_down:
             self.rect.y = Y_C3 - level * 7 # 7 = 오선지 interval/2
         else:
             self.rect.y = Y_B4 - level * 7
+        if '#' in self.pitch: # 반음이면 '#' 붙임
+            rect = self.IMG_SHARP.get_rect()
+            self.X += 14
+            rect.x = self.X - self.WIDTH + 4
+            rect.y = self.rect.y + self.HEIGHT/2 + 2
+            self.screen.blit(self.IMG_SHARP, rect)
+        self.rect.x = self.X
         self.screen.blit(self.image, self.rect)
 
         return self.X
@@ -213,6 +224,7 @@ if __name__ == '__main__':
 
             # 마우스 클릭
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # print(event.button)
                 black_key = False
                 for i in range(len(black_keys)):
                     if black_keys[i].collidepoint(event.pos):
@@ -229,12 +241,12 @@ if __name__ == '__main__':
                         if input_notes[i].rect.collidepoint(event.pos):
                             tmp = input_notes.pop(i)
                             th = tmp.get_note()
-                            # 좌클릭
-                            if event.button == 1: # 짧아짐
+                            # 휠업
+                            if event.button == 5: # 짧아짐
                                 if th < 9:
                                     th = int(th * 2)
-                            # 우클릭
-                            if event.button == 3: # 길어짐
+                            # 휠다운
+                            if event.button == 4: # 길어짐
                                 if th > 2:
                                     th = int(th / 2)
                             tmp.set_note(th)
