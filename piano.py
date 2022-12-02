@@ -8,7 +8,7 @@ pygame.init()
 
 fps = 60
 timer = pygame.time.Clock()
-WIDTH = 50 * len(pl.white_notes)
+WIDTH = 50 * len(pl.white_pitches)
 HEIGHT = 400
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 white_sounds = []
@@ -21,9 +21,9 @@ right_oct = MIN_OCT + 2
 
 left_hand = pl.left_hand
 right_hand = pl.right_hand
-piano_notes = pl.piano_notes
-white_notes = pl.white_notes
-black_notes = pl.black_notes
+piano_notes = pl.piano_pitches
+white_notes = pl.white_pitches
+black_notes = pl.black_pitches
 black_labels = pl.black_labels
 
 font = pygame.font.SysFont('arial', 48)

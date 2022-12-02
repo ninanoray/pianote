@@ -2,17 +2,12 @@ import pygame
 import piano_lists as pl
 from pygame import mixer
 
-#########################################################
-#                      초기화
-pygame.init()
-
-class Piano_GUI:
+class PianoGUI:
     MIN_OCT = 3 # 최소 옥타브
 
-    def __init__(self, screen, timer, width, height,
+    def __init__(self, screen, width, height,
                  white_sounds, black_sounds, small_font, real_small_font):
         self.screen = screen
-        self.timer = timer
 
         self.WIDTH = width
         self.HEIGHT = height
@@ -25,7 +20,7 @@ class Piano_GUI:
 
         self.left_hand = pl.left_hand
         self.right_hand = pl.right_hand
-        self.white_labels = pl.white_notes # 백건
+        self.white_labels = pl.white_pitches # 백건
         self.black_labels = pl.black_labels # 흑건
 
         self.small_font = small_font
@@ -193,6 +188,103 @@ class Piano_GUI:
                              (((self.right_oct - 3) * rect_w7 - rect_w * 4) + 18 * i + blank_space,
                               self.HEIGHT - 81))
 
+class Note: # 음표
+    WIDTH = 30
+    HEIGHT = 60
+
+    # 음표 이미지
+    IMG_note_2 = pygame.image.load("images/note_half.png")
+    IMG_note_2 = pygame.transform.scale(IMG_note_2, (WIDTH, HEIGHT))
+    IMG_note_2up = pygame.image.load("images/note_half.png")
+    IMG_note_2up = pygame.transform.scale(IMG_note_2up, (WIDTH, HEIGHT))
+    IMG_note_2up = pygame.transform.rotate(IMG_note_2up, 180)
+    IMG_note_4 = pygame.image.load("images/note_quarter.png")
+    IMG_note_4 = pygame.transform.scale(IMG_note_4, (WIDTH, HEIGHT))
+    IMG_note_4up = pygame.image.load("images/note_quarter.png")
+    IMG_note_4up = pygame.transform.scale(IMG_note_4up, (WIDTH, HEIGHT))
+    IMG_note_4up = pygame.transform.rotate(IMG_note_4up, 180)
+    IMG_note_8 = pygame.image.load("images/note_eighth.png")
+    IMG_note_8 = pygame.transform.scale(IMG_note_8, (WIDTH, HEIGHT))
+    IMG_note_8up = pygame.image.load("images/note_eighth_up.png")
+    IMG_note_8up = pygame.transform.scale(IMG_note_8up, (WIDTH, HEIGHT))
+    IMG_note_16 = pygame.image.load("images/note_sixteenth.png")
+    IMG_note_16 = pygame.transform.scale(IMG_note_16, (WIDTH, HEIGHT))
+    IMG_note_16up = pygame.image.load("images/note_sixteenth_up.png")
+    IMG_note_16up = pygame.transform.scale(IMG_note_16up, (WIDTH, HEIGHT))
+
+    def __init__(self, screen, pitch, note):
+        self.screen = screen
+        self.list_pitches = pl.piano_pitches
+
+        self.set_pitch_value(pitch)
+        self.set_note_value(note)
+        self.set_note_image()
+
+    def set_pitch_value(self, name):
+        if len(name) > 2:
+            if name[-1] == "s" or "#":
+                self.pitch = name[0] + name[1] + "#"
+        else:
+            self.pitch = name
+
+    def set_note_value(self, name):
+        if name == "4" or "4th" or 4 or "quarter":
+            self.note = 4 # 4분 음표
+        elif name == "8" or "8th" or 8 or "eighth":
+            self.note = 8 # 8분 음표
+        elif name == "2" or "2nd" or 2 or "second" or "half":
+            self.note = 2 # 2분 음표
+        elif name == "16" or "16th" or 2 or "sixteenth":
+            self.note = 16 # 16분 음표
+        else:
+            self.note = None
+
+    def set_note_image(self):
+        index_B4 = self.list_pitches.index("B4") # 4옥타브 시
+        index_pitch = self.list_pitches.index(self.pitch)
+
+        # 4옥타브 시를 넘어서 음표 꼬리를 밑으로 내리는 가
+        if index_pitch < index_B4:
+            self.is_down = True
+            if self.note == 2:
+                self.image = self.IMG_note_2
+            elif self.note == 4:
+                self.image = self.IMG_note_4
+            elif self.note == 8:
+                self.image = self.IMG_note_8
+            elif self.note == 16:
+                self.image = self.IMG_note_16
+        else:
+            self.is_down = False
+            if self.note == 2:
+                self.image = self.IMG_note_2up
+            elif self.note == 4:
+                self.image = self.IMG_note_4up
+            elif self.note == 8:
+                self.image = self.IMG_note_8up
+            elif self.note == 16:
+                self.image = self.IMG_note_16up
+
+    #음표 그리기
+    def draw_note(self, step):
+        Y_C3 = 166  # 오선지 C4(도) 선 위치
+        Y_B4 = 212  # 오선지 B4(시) 선 위치
+        X = self.WIDTH + step
+
+        pitch_name = ""
+        if len(self.pitch):
+            pitch_name = self.pitch[0:2]
+        index_C4 = pl.white_pitches.index("C4")
+        index_pitch = pl.white_pitches.index(pitch_name)
+        level = index_pitch - index_C4
+
+        if self.is_down:
+            self.screen.blit(self.image, (X, Y_C3 - level*7))
+        else:
+            self.screen.blit(self.image, (X, Y_B4 - level * 7))
+
+        return X
+
 #GUI 제목/설명
 def draw_title_bar(screen, font, medium_font):
     instruction_text = medium_font.render('Up/Down Key Change Left Hand octave', True, 'black')
@@ -206,29 +298,36 @@ def draw_title_bar(screen, font, medium_font):
     title_text = font.render('Python Piano GUI', True, 'black')
     screen.blit(title_text, (12, 20))
 
+#오선지 그리기
 def draw_music_sheet(screen, width):
-    y = 96
-    height = 96
+    y = 120
+    height = 154
+    interval = 14
+
     pygame.draw.rect(screen, 'white', [0, y, width, height])
     for i in range(1, 6) :
-        pygame.draw.line(screen, 'black', [0, y + 16*i], [width, y + 16*i], 2)
+        pygame.draw.line(screen, 'black', [0, y + i * interval + interval],
+                         [width, y + i * interval + interval], 2)
 
 if __name__ == '__main__':
     FPS = 60
 
-    piano_notes = pl.piano_notes
-    white_notes = pl.white_notes
-    black_notes = pl.black_notes
+    piano_pitches = pl.piano_pitches
+    white_pitches = pl.white_pitches
+    black_pitches = pl.black_pitches
 
-    WIDTH = 50 * len(white_notes)
-    HEIGHT = 400
+    WIDTH = 50 * len(white_pitches)
+    HEIGHT = 500
 
     white_sounds = []
     black_sounds = []
     active_whites = []
     active_blacks = []
 
+    input_notes = []
+
     #########################################################
+    pygame.init()
     pygame.mixer.set_num_channels(50)
     pygame.display.set_caption("Piano GUI")
     screen = pygame.display.set_mode([WIDTH, HEIGHT])
@@ -241,26 +340,26 @@ if __name__ == '__main__':
     real_small_font = pygame.font.SysFont('arial', 10)
 
     # 소리 파일
-    for i in range(len(white_notes)):
-        white_sounds.append(mixer.Sound(f'sound\\{white_notes[i]}.wav'))
-
-    for i in range(len(black_notes)):
-        black_sounds.append(mixer.Sound(f'sound\\{black_notes[i]}.wav'))
+    for i in range(len(white_pitches)):
+        white_sounds.append(mixer.Sound(f'sound\\{white_pitches[i]}.wav'))
+    for i in range(len(black_pitches)):
+        black_sounds.append(mixer.Sound(f'sound\\{black_pitches[i]}.wav'))
 
     # 피아노 GUI 클래스
-    piano_gui = Piano_GUI(screen, timer, WIDTH, HEIGHT,
-                          white_sounds, black_sounds, small_font, real_small_font)
+    gui_piano = PianoGUI(screen, WIDTH, HEIGHT, white_sounds, black_sounds, small_font, real_small_font)
 
     run = True
     while run:
         timer.tick(FPS)
         screen.fill('gray')
-        white_keys, black_keys, active_whites, active_blacks = piano_gui.draw_piano(active_whites, active_blacks)
-        piano_gui.draw_hands()
+        white_keys, black_keys, active_whites, active_blacks = gui_piano.draw_piano(active_whites, active_blacks)
+        gui_piano.draw_hands()
         draw_title_bar(screen, font, medium_font)
         draw_music_sheet(screen, WIDTH)
 
         for event in pygame.event.get():
+            input_pitch = ""  # 입력한 음
+
             if event.type == pygame.QUIT:
                 run = False
             # 마우스 클릭
@@ -277,40 +376,59 @@ if __name__ == '__main__':
                         active_whites.append([i, 30])
             # 키보드 입력
             if event.type == pygame.TEXTINPUT:
-                if event.text.upper() in piano_gui.left_dict:
-                    if piano_gui.left_dict[event.text.upper()][-1] == 's':
-                        index = black_notes.index(piano_gui.left_dict[event.text.upper()])
+                if event.text.upper() in gui_piano.left_dict:
+                    input_pitch = gui_piano.left_dict[event.text.upper()]
+                    # 음 출력
+                    if gui_piano.left_dict[event.text.upper()][-1] == 's':
+                        index = black_pitches.index(gui_piano.left_dict[event.text.upper()])
                         black_sounds[index].play(0, 1000)
                         active_blacks.append([index, 30])
                     else:
-                        index = white_notes.index(piano_gui.left_dict[event.text.upper()])
+                        index = white_pitches.index(gui_piano.left_dict[event.text.upper()])
                         white_sounds[index].play(0, 1000)
                         active_whites.append([index, 30])
-                if event.text.upper() in piano_gui.right_dict:
-                    if piano_gui.right_dict[event.text.upper()][-1] == 's':
-                        index = black_notes.index(piano_gui.right_dict[event.text.upper()])
+                        
+                if event.text.upper() in gui_piano.right_dict:
+                    input_pitch = gui_piano.right_dict[event.text.upper()]
+                    # 음 출력
+                    if gui_piano.right_dict[event.text.upper()][-1] == 's':
+                        index = black_pitches.index(gui_piano.right_dict[event.text.upper()])
                         black_sounds[index].play(0, 1000)
                         active_blacks.append([index, 30])
                     else:
-                        index = white_notes.index(piano_gui.right_dict[event.text.upper()])
+                        index = white_pitches.index(gui_piano.right_dict[event.text.upper()])
                         white_sounds[index].play(0, 1000)
                         active_whites.append([index, 30])
 
-            # 상/하/좌/우 키 : 옥타브 조절
+                # 입력한 음 저장
+                if (input_pitch != ""):
+                    note = Note(screen, input_pitch, 4)
+                    input_notes.append(note)
+
+            # 상/하/좌/우 키 : 옥타브 조절, delete 키 : 마지막 음표 삭제
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    if piano_gui.right_oct < 5:
-                        piano_gui.set_right_oct(piano_gui.get_right_oct()+1)
+                    if gui_piano.right_oct < 5:
+                        gui_piano.set_right_oct(gui_piano.get_right_oct() + 1)
                 if event.key == pygame.K_LEFT:
-                    if piano_gui.right_oct > 4:
-                        piano_gui.set_right_oct(piano_gui.get_right_oct()-1)
+                    if gui_piano.right_oct > 4:
+                        gui_piano.set_right_oct(gui_piano.get_right_oct() - 1)
                 if event.key == pygame.K_UP:
-                    if piano_gui.left_oct < 5:
-                        piano_gui.set_left_oct(piano_gui.get_left_oct()+1)
+                    if gui_piano.left_oct < 5:
+                        gui_piano.set_left_oct(gui_piano.get_left_oct() + 1)
                 if event.key == pygame.K_DOWN:
-                    if piano_gui.left_oct > 3:
-                        piano_gui.set_left_oct(piano_gui.get_left_oct()-1)
-                piano_gui.update_keys_set()
+                    if gui_piano.left_oct > 3:
+                        gui_piano.set_left_oct(gui_piano.get_left_oct() - 1)
+                gui_piano.update_keys_set()
+
+                if event.key == pygame.K_DELETE:
+                    if input_notes:
+                        input_notes.pop()
+
+        if input_notes:
+            step = 0
+            for index, note in enumerate(input_notes):
+                step = note.draw_note(step)
 
         pygame.display.flip()
 
