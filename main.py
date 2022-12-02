@@ -4,26 +4,25 @@ import piano_gui as gui
 from pygame import mixer
 
 class Note: # 음표
-    WIDTH = 30
+    WIDTH = 32
+    WIDTH2 = 53
     HEIGHT = 60
 
     # 음표 이미지
     IMG_note_2 = pygame.image.load("images/note_half.png")
     IMG_note_2 = pygame.transform.scale(IMG_note_2, (WIDTH, HEIGHT))
-    IMG_note_2up = pygame.image.load("images/note_half.png")
+    IMG_note_2up = pygame.image.load("images/note_half_up.png")
     IMG_note_2up = pygame.transform.scale(IMG_note_2up, (WIDTH, HEIGHT))
-    IMG_note_2up = pygame.transform.rotate(IMG_note_2up, 180)
     IMG_note_4 = pygame.image.load("images/note_quarter.png")
     IMG_note_4 = pygame.transform.scale(IMG_note_4, (WIDTH, HEIGHT))
-    IMG_note_4up = pygame.image.load("images/note_quarter.png")
+    IMG_note_4up = pygame.image.load("images/note_quarter_up.png")
     IMG_note_4up = pygame.transform.scale(IMG_note_4up, (WIDTH, HEIGHT))
-    IMG_note_4up = pygame.transform.rotate(IMG_note_4up, 180)
     IMG_note_8 = pygame.image.load("images/note_eighth.png")
-    IMG_note_8 = pygame.transform.scale(IMG_note_8, (WIDTH, HEIGHT))
+    IMG_note_8 = pygame.transform.scale(IMG_note_8, (WIDTH2, HEIGHT))
     IMG_note_8up = pygame.image.load("images/note_eighth_up.png")
     IMG_note_8up = pygame.transform.scale(IMG_note_8up, (WIDTH, HEIGHT))
     IMG_note_16 = pygame.image.load("images/note_sixteenth.png")
-    IMG_note_16 = pygame.transform.scale(IMG_note_16, (WIDTH, HEIGHT))
+    IMG_note_16 = pygame.transform.scale(IMG_note_16, (WIDTH2, HEIGHT))
     IMG_note_16up = pygame.image.load("images/note_sixteenth_up.png")
     IMG_note_16up = pygame.transform.scale(IMG_note_16up, (WIDTH, HEIGHT))
 
@@ -80,7 +79,10 @@ class Note: # 음표
     def draw_note(self, step):
         Y_C3 = 166  # 오선지 C4(도) 선 위치
         Y_B4 = 212  # 오선지 B4(시) 선 위치
-        self.X = self.WIDTH + step
+        if step > 0:
+            self.X = self.WIDTH + step
+        else:
+            self.X = 10
 
         pitch_name = ""
         if len(self.pitch):
@@ -193,15 +195,14 @@ if __name__ == '__main__':
                             tmp = input_notes.pop(i)
                             th = tmp.get_note()
                             # 좌클릭
-                            if event.button == 1:
+                            if event.button == 1: # 짧아짐
                                 if th < 9:
                                     th = int(th * 2)
-                                tmp.set_note(th)
                             # 우클릭
-                            if event.button == 3:
+                            if event.button == 3: # 길어짐
                                 if th > 2:
                                     th = int(th / 2)
-                                tmp.set_note(th)
+                            tmp.set_note(th)
                             tmp.set_image()
                             tmp.draw_note(tmp.X)
                             input_notes.insert(i, tmp)
@@ -267,8 +268,12 @@ if __name__ == '__main__':
 
         if input_notes:
             step = 0
-            for index, note in enumerate(input_notes):
-                step = note.draw_note(step)
+            for note in input_notes:
+                if note.get_note() > 4 and note.is_down:
+                    step = note.draw_note(step) + (note.WIDTH2-note.WIDTH)/2
+                else:
+                    step = note.draw_note(step)
+
 
         pygame.display.flip()
 
