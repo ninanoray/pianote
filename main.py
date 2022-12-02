@@ -1,6 +1,6 @@
 import pygame
 import piano_lists as pl
-import PianoGUI as gui
+import piano_gui as gui
 from pygame import mixer
 
 class Note: # 음표
