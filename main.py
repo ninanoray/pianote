@@ -3,9 +3,13 @@ import piano_lists as pl
 import piano_gui as gui
 from pygame import mixer
 
+# 전역 변수
+global WHITE_SOUNDS, BLACK_SOUNDS
+
+
 class Note: # 음표
     WIDTH = 32
-    WIDTH2 = 53
+    WIDTH2 = 46
     HEIGHT = 60
 
     # 음표 이미지
@@ -28,23 +32,21 @@ class Note: # 음표
 
     def __init__(self, screen, pitch, note=4):
         self.screen = screen
-        self.list_pitches = pl.piano_pitches
 
         self.set_pitch(pitch)
         self.note = note
         self.set_image()
-        self.X = 10 # note 이미지 X 좌표
+        self.set_sound()
 
     def set_pitch(self, name):
-        print(name)
         if 's' in name:
             self.pitch = name.replace('s', '#')
         else:
             self.pitch = name
 
     def set_image(self):
-        index_B4 = self.list_pitches.index("B4") # 4옥타브 시
-        index_pitch = self.list_pitches.index(self.pitch)
+        index_B4 = pl.piano_pitches.index("B4") # 4옥타브 시
+        index_pitch = pl.piano_pitches.index(self.pitch)
 
         # 4옥타브 시를 넘어서 음표 꼬리를 밑으로 내리는 가
         if index_pitch < index_B4:
@@ -76,14 +78,26 @@ class Note: # 음표
     def get_note(self):
         return self.note
 
+    def set_sound(self):
+        if '#' not in self.pitch:
+            index_sound = pl.white_pitches.index(self.pitch)
+            self.sound = WHITE_SOUNDS[index_sound]
+        else:
+            pitch = self.pitch.replace('#', 's')
+            index_sound = pl.black_pitches.index(pitch)
+            self.sound = BLACK_SOUNDS[index_sound]
+    def get_sound(self):
+        return self.sound
+
     #음표 그리기
     def draw_note(self, step):
         Y_C3 = 166  # 오선지 C4(도) 선 위치
         Y_B4 = 212  # 오선지 B4(시) 선 위치
+        START_MARGIN = 42 + 22 + 10 # 높은음자리표w + 박자표w + a
         if step > 0:
             self.X = self.WIDTH + step
         else:
-            self.X = 10
+            self.X = START_MARGIN
 
         pitch_name = ""
         if len(self.pitch):
@@ -123,13 +137,27 @@ def draw_music_sheet(screen, width):
     y = 120
     height = 154
     interval = 14
+    W_CLEF = 42
+    W_METER = 22
+
+    IMG_TREBLE_CLEF = pygame.image.load("images/treble_clef.png")
+    IMG_TREBLE_CLEF = pygame.transform.scale(IMG_TREBLE_CLEF, (W_CLEF, interval*6))
+    IMG_FOUR_FOURTH = pygame.image.load("images/four_fourth.png")
+    IMG_FOUR_FOURTH = pygame.transform.scale(IMG_FOUR_FOURTH, (W_METER, interval*4))
 
     pygame.draw.rect(screen, 'white', [0, y, width, height])
     for i in range(1, 6) :
         pygame.draw.line(screen, 'black', [0, y + i * interval + interval],
                          [width, y + i * interval + interval], 2)
 
+    screen.blit(IMG_TREBLE_CLEF, (0, y + interval))
+    screen.blit(IMG_FOUR_FOURTH, (W_CLEF, y + interval*2))
+
+
 if __name__ == '__main__':
+    WHITE_SOUNDS = []
+    BLACK_SOUNDS = []
+    
     FPS = 60
 
     piano_pitches = pl.piano_pitches
@@ -139,8 +167,6 @@ if __name__ == '__main__':
     WIDTH = 50 * len(white_pitches)
     HEIGHT = 500
 
-    white_sounds = []
-    black_sounds = []
     active_whites = []
     active_blacks = []
 
@@ -161,12 +187,15 @@ if __name__ == '__main__':
 
     # 소리 파일
     for i in range(len(white_pitches)):
-        white_sounds.append(mixer.Sound(f'sound\\{white_pitches[i]}.wav'))
+        WHITE_SOUNDS.append(mixer.Sound(f'sound\\{white_pitches[i]}.wav'))
     for i in range(len(black_pitches)):
-        black_sounds.append(mixer.Sound(f'sound\\{black_pitches[i]}.wav'))
+        BLACK_SOUNDS.append(mixer.Sound(f'sound\\{black_pitches[i]}.wav'))
 
     # 피아노 GUI 클래스
-    gui_piano = gui.PianoGUI(screen, WIDTH, HEIGHT, white_sounds, black_sounds, small_font, real_small_font)
+    gui_piano = gui.PianoGUI(screen, WIDTH, HEIGHT, WHITE_SOUNDS, BLACK_SOUNDS, small_font, real_small_font)
+
+    # 오선지를 새로 쓰면 가려진 음표는 클릭 못하게 하기 위함
+    count_music_sheet = [0]
 
     run = True
     while run:
@@ -187,17 +216,17 @@ if __name__ == '__main__':
                 black_key = False
                 for i in range(len(black_keys)):
                     if black_keys[i].collidepoint(event.pos):
-                        black_sounds[i].play(0, 1000)
+                        BLACK_SOUNDS[i].play(0, 1000)
                         black_key = True
                         active_blacks.append([i, 30])
                 for i in range(len(white_keys)):
                     if white_keys[i].collidepoint(event.pos) and not black_key:
-                        white_sounds[i].play(0, 3000)
+                        WHITE_SOUNDS[i].play(0, 3000)
                         active_whites.append([i, 30])
                 # 음표 클릭
                 if input_notes:
-                    for i, note in enumerate(input_notes):
-                        if note.rect.collidepoint(event.pos):
+                    for i in range(count_music_sheet[-1], len(input_notes)):
+                        if input_notes[i].rect.collidepoint(event.pos):
                             tmp = input_notes.pop(i)
                             th = tmp.get_note()
                             # 좌클릭
@@ -222,11 +251,11 @@ if __name__ == '__main__':
                     # 음 출력
                     if gui_piano.left_dict[event.text.upper()][-1] == 's':
                         index = black_pitches.index(gui_piano.left_dict[event.text.upper()])
-                        black_sounds[index].play(0, 1000) # 소리 출력
+                        BLACK_SOUNDS[index].play(0, 1000) # 소리 출력
                         active_blacks.append([index, 30]) # 효과 출력
                     else:
                         index = white_pitches.index(gui_piano.left_dict[event.text.upper()])
-                        white_sounds[index].play(0, 1000)
+                        WHITE_SOUNDS[index].play(0, 1000)
                         active_whites.append([index, 30])
                 # 오른손
                 if event.text.upper() in gui_piano.right_dict:
@@ -234,14 +263,16 @@ if __name__ == '__main__':
                     # 음 출력
                     if gui_piano.right_dict[event.text.upper()][-1] == 's':
                         index = black_pitches.index(gui_piano.right_dict[event.text.upper()])
-                        black_sounds[index].play(0, 1000)
+                        BLACK_SOUNDS[index].play(0, 1000)
                         active_blacks.append([index, 30])
                     else:
                         index = white_pitches.index(gui_piano.right_dict[event.text.upper()])
-                        white_sounds[index].play(0, 1000)
+                        WHITE_SOUNDS[index].play(0, 1000)
                         active_whites.append([index, 30])
                 # 입력한 음 저장
                 if (input_pitch != ""):
+                    print(f'입력: {input_pitch}')
+                    # Note 객체 생성
                     note = Note(screen, input_pitch)
                     input_notes.append(note)
 
@@ -266,23 +297,34 @@ if __name__ == '__main__':
                 if event.key == pygame.K_DELETE:
                     if input_notes:
                         removed_note = input_notes.pop()
-                        print(f'삭제 : {removed_note.get_pitch()}({removed_note.get_note()}th)')
+                        print(f'삭제: {removed_note.get_pitch()}({removed_note.get_note()}th)')
+                # Enter 키 : 악보 재생
+                if event.key == 13:
+                    if input_notes:
+                        for note in input_notes:
+                            # 4/4박자에서 4분음표 1초에 1개
+                            time = int(1000 / (note.get_note()/4))
+                            note.get_sound().play(0, 1000)
+                            pygame.time.delay(time)
+
                 # ESC 키 : 프로그램 종료
                 if event.key == pygame.K_ESCAPE:
                     print("GUI program 종료")
                     run = False
+
 
         if input_notes:
             step = 0
             for note in input_notes:
                 # B4이하 음표 8분음표 16분음표 간격 조정
                 if note.get_note() > 4 and note.is_down:
-                    step = note.draw_note(step) + (note.WIDTH2-note.WIDTH)/2
+                    step = note.draw_note(step) + (note.WIDTH2-note.WIDTH)
                 else:
                     step = note.draw_note(step)
 
                 # 오선지 밖으로 넘어가면 오선지 다시 그림
                 if note.X > WIDTH - note.WIDTH:
+                    count_music_sheet.append(input_notes.index(note))
                     draw_music_sheet(screen, WIDTH)
                     step = 0
                     note.set_X(10)
