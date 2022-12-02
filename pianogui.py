@@ -376,6 +376,7 @@ if __name__ == '__main__':
                         active_whites.append([i, 30])
             # 키보드 입력
             if event.type == pygame.TEXTINPUT:
+                # 왼손
                 if event.text.upper() in gui_piano.left_dict:
                     input_pitch = gui_piano.left_dict[event.text.upper()]
                     # 음 출력
@@ -387,7 +388,7 @@ if __name__ == '__main__':
                         index = white_pitches.index(gui_piano.left_dict[event.text.upper()])
                         white_sounds[index].play(0, 1000)
                         active_whites.append([index, 30])
-                        
+                # 오른손
                 if event.text.upper() in gui_piano.right_dict:
                     input_pitch = gui_piano.right_dict[event.text.upper()]
                     # 음 출력
@@ -399,14 +400,14 @@ if __name__ == '__main__':
                         index = white_pitches.index(gui_piano.right_dict[event.text.upper()])
                         white_sounds[index].play(0, 1000)
                         active_whites.append([index, 30])
-
                 # 입력한 음 저장
                 if (input_pitch != ""):
                     note = Note(screen, input_pitch, 4)
                     input_notes.append(note)
 
-            # 상/하/좌/우 키 : 옥타브 조절, delete 키 : 마지막 음표 삭제
+
             if event.type == pygame.KEYDOWN:
+                # 상/하/좌/우 키 : 옥타브 조절
                 if event.key == pygame.K_RIGHT:
                     if gui_piano.right_oct < 5:
                         gui_piano.set_right_oct(gui_piano.get_right_oct() + 1)
@@ -420,10 +421,14 @@ if __name__ == '__main__':
                     if gui_piano.left_oct > 3:
                         gui_piano.set_left_oct(gui_piano.get_left_oct() - 1)
                 gui_piano.update_keys_set()
-
+                # delete 키 : 마지막 음표 삭제
                 if event.key == pygame.K_DELETE:
                     if input_notes:
                         input_notes.pop()
+                # ESC 키 : 프로그램 종료
+                if event.key == pygame.K_ESCAPE:
+                    print("프로그램 종료")
+                    run = False
 
         if input_notes:
             step = 0
