@@ -224,7 +224,7 @@ if __name__ == '__main__':
 
             # 마우스 클릭
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # print(event.button)
+                print(event.button)
                 black_key = False
                 for i in range(len(black_keys)):
                     if black_keys[i].collidepoint(event.pos):
@@ -239,20 +239,25 @@ if __name__ == '__main__':
                 if input_notes:
                     for i in range(count_music_sheet[-1], len(input_notes)):
                         if input_notes[i].rect.collidepoint(event.pos):
+                            # 우클릭 : 클릭한 음표 삭제
+                            if event.button == 3:
+                                input_notes.pop(i)
+                                break
+
+                            # 휠업(4)/다운(5) : 음표 길어짐, 음표 짧아짐
                             tmp = input_notes.pop(i)
                             th = tmp.get_note()
-                            # 휠업
-                            if event.button == 5: # 짧아짐
+                            if event.button == 5:
                                 if th < 9:
                                     th = int(th * 2)
-                            # 휠다운
-                            if event.button == 4: # 길어짐
+                            if event.button == 4:
                                 if th > 2:
                                     th = int(th / 2)
                             tmp.set_note(th)
                             tmp.set_image()
                             tmp.draw_note(tmp.X)
                             input_notes.insert(i, tmp)
+
 
 
             # 키보드 값 입력
