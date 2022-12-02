@@ -71,11 +71,16 @@ class Note: # 음표
     def get_pitch(self):
         return self.pitch
 
+    def set_note(self, th):
+        self.note = th
+    def get_note(self):
+        return self.note
+
     #음표 그리기
     def draw_note(self, step):
         Y_C3 = 166  # 오선지 C4(도) 선 위치
         Y_B4 = 212  # 오선지 B4(시) 선 위치
-        X = self.WIDTH + step
+        self.X = self.WIDTH + step
 
         pitch_name = ""
         if len(self.pitch):
@@ -84,12 +89,15 @@ class Note: # 음표
         index_pitch = pl.white_pitches.index(pitch_name)
         level = index_pitch - index_C4
 
+        self.rect = self.image.get_rect()
+        self.rect.x = self.X
         if self.is_down:
-            self.screen.blit(self.image, (X, Y_C3 - level*7)) # 7 = 오선지 interval/2
+            self.rect.y = Y_C3 - level * 7 # 7 = 오선지 interval/2
         else:
-            self.screen.blit(self.image, (X, Y_B4 - level*7))
+            self.rect.y = Y_B4 - level * 7
+        self.screen.blit(self.image, self.rect)
 
-        return X
+        return self.X
 
 #GUI 제목/설명
 def draw_title_bar(screen, font, medium_font):
@@ -166,8 +174,6 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             input_pitch = ""  # 입력한 음
 
-            if event.type == pygame.QUIT:
-                run = False
             # 마우스 클릭
             if event.type == pygame.MOUSEBUTTONDOWN:
                 black_key = False
@@ -180,7 +186,28 @@ if __name__ == '__main__':
                     if white_keys[i].collidepoint(event.pos) and not black_key:
                         white_sounds[i].play(0, 3000)
                         active_whites.append([i, 30])
-            # 키보드 입력
+                # 음표 클릭
+                if input_notes:
+                    for i, note in enumerate(input_notes):
+                        if note.rect.collidepoint(event.pos):
+                            tmp = input_notes.pop(i)
+                            th = tmp.get_note()
+                            # 좌클릭
+                            if event.button == 1:
+                                if th < 9:
+                                    th = int(th * 2)
+                                tmp.set_note(th)
+                            # 우클릭
+                            if event.button == 3:
+                                if th > 2:
+                                    th = int(th / 2)
+                                tmp.set_note(th)
+                            tmp.set_image()
+                            tmp.draw_note(tmp.X)
+                            input_notes.insert(i, tmp)
+
+
+            # 키보드 값 입력
             if event.type == pygame.TEXTINPUT:
                 # 왼손
                 if event.text.upper() in gui_piano.left_dict:
@@ -188,8 +215,8 @@ if __name__ == '__main__':
                     # 음 출력
                     if gui_piano.left_dict[event.text.upper()][-1] == 's':
                         index = black_pitches.index(gui_piano.left_dict[event.text.upper()])
-                        black_sounds[index].play(0, 1000)
-                        active_blacks.append([index, 30])
+                        black_sounds[index].play(0, 1000) # 소리 출력
+                        active_blacks.append([index, 30]) # 효과 출력
                     else:
                         index = white_pitches.index(gui_piano.left_dict[event.text.upper()])
                         white_sounds[index].play(0, 1000)
@@ -212,6 +239,7 @@ if __name__ == '__main__':
                     input_notes.append(note)
 
 
+            # 키보드 키 이벤트
             if event.type == pygame.KEYDOWN:
                 # 상/하/좌/우 키 : 옥타브 조절
                 if event.key == pygame.K_RIGHT:
@@ -230,10 +258,11 @@ if __name__ == '__main__':
                 # delete 키 : 마지막 음표 삭제
                 if event.key == pygame.K_DELETE:
                     if input_notes:
-                        input_notes.pop()
+                        removed_note = input_notes.pop()
+                        print(f'삭제 : {removed_note.get_pitch()}({removed_note.get_note()}th)')
                 # ESC 키 : 프로그램 종료
                 if event.key == pygame.K_ESCAPE:
-                    print("프로그램 종료")
+                    print("GUI program 종료")
                     run = False
 
         if input_notes:
@@ -246,5 +275,5 @@ if __name__ == '__main__':
     pygame.quit()
 
     # 저장된 노트 정보
-    saved_notes = [note.get_pitch() for note in input_notes]
+    saved_notes = [(note.get_pitch(), note.get_note()) for note in input_notes]
     print(saved_notes)
