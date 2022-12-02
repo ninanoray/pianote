@@ -3,10 +3,10 @@ import piano_lists as pl
 import piano_gui as gui
 from pygame import mixer
 
-# 전역 변수
+#-----전역 변수---------------------------------------------------------------------------------------------------------#
 global WHITE_SOUNDS, BLACK_SOUNDS
 
-
+#-----클래스 선언-------------------------------------------------------------------------------------------------------#
 class Note: # 음표
     WIDTH = 32
     WIDTH2 = 46
@@ -130,6 +130,7 @@ class Note: # 음표
     def set_X(self, x):
         self.X = x
 
+#-----함수 선언---------------------------------------------------------------------------------------------------------#
 #GUI 제목/설명
 def draw_title_bar(screen, font, medium_font):
     instruction_text = medium_font.render('Up/Down Key Change Left Hand octave', True, 'black')
@@ -164,7 +165,7 @@ def draw_music_sheet(screen, width):
     screen.blit(IMG_TREBLE_CLEF, (0, y + interval))
     screen.blit(IMG_FOUR_FOURTH, (W_CLEF, y + interval*2))
 
-
+#-----main-------------------------------------------------------------------------------------------------------------#
 if __name__ == '__main__':
     WHITE_SOUNDS = []
     BLACK_SOUNDS = []
