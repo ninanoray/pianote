@@ -1,6 +1,6 @@
 # **Pianote**
 피아노 GUI로 작곡하는 프로그램
-This is python project for oss class  
+This is python project for oss class
 
 ##현재기능
 
@@ -12,7 +12,7 @@ This is python project for oss class
 1. 좌우 방향키로 오른손 키 레이아웃의 옥타브 이동가능
 1. 상하 방향키로 왼손 키 레이아웃의 옥타브 이동가능
 1. 마우스로 피아노 클릭시 소리 출력은 가능(단, 음표가 입력되지는 않음)
-1. ESC 키를 누르면 프로그램이 종료되고 지금까지 입력된 악보 저장  
+1. ESC 키를 누르면 프로그램이 종료되고 지금까지 입력된 악보 저장
 
 ###음표조작
 
