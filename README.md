@@ -18,7 +18,7 @@ This is python project for oss class
 
 <br/>
 
-### 음표조작
+### 음표 조작
 
 1. 음표 좌클릭
 1. 음표 우클릭시 클릭한 음표 삭제
