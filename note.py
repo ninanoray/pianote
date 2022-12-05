@@ -1,10 +1,35 @@
 import pygame
 import piano_lists as pl
 
+
+# 오선지 요소(오선지 5줄)
+INTERVAL_LINE = 14 # 선 사이 간격
+Y_SHEET = 120 # 오선지 Y 좌표
+H_SHEET = INTERVAL_LINE * (4 + 2 + 5) # 내부 간격: 4칸, 외부 간격 위: 2칸, 외부 간격 아래: 5칸
+W_CLEF = 42 # 높은 음자리표 width
+W_METER = 22 # 박자표 width
+
+# 오선지 그리기
+def draw_music_sheet(screen, width_gui):
+    IMG_TREBLE_CLEF = pygame.image.load("images/treble_clef.png")
+    IMG_TREBLE_CLEF = pygame.transform.scale(IMG_TREBLE_CLEF, (W_CLEF, INTERVAL_LINE * 6))
+    IMG_FOUR_FOURTH = pygame.image.load("images/four_fourth.png")
+    IMG_FOUR_FOURTH = pygame.transform.scale(IMG_FOUR_FOURTH, (W_METER, INTERVAL_LINE * 4))
+
+    # 오선지 배경 그리기
+    pygame.draw.rect(screen, 'white', [0, Y_SHEET, width_gui, H_SHEET])
+    # 오선지 선 그리기
+    for i in range(0, 5):
+        pygame.draw.line(screen, 'black', [0, Y_SHEET + (i + 2) * INTERVAL_LINE], # 외부 간격 위: 2칸
+                         [width_gui, Y_SHEET + (i + 2) * INTERVAL_LINE], 2)
+
+    screen.blit(IMG_TREBLE_CLEF, (0, Y_SHEET + INTERVAL_LINE))
+    screen.blit(IMG_FOUR_FOURTH, (W_CLEF, Y_SHEET + INTERVAL_LINE * 2))
+
 class Note: # 음표
-    WIDTH = 32
-    WIDTH2 = 46
-    HEIGHT = 60
+    WIDTH = 32 # 음표 이미지 넓이
+    WIDTH2 = 46 # 꼬리올린 8분음표, 꼬리올린 16분음표 전용
+    HEIGHT = 60 # 음표 이미지 높이
 
     # 음표 이미지
     IMG_note_2 = pygame.image.load("images/note_half.png")
@@ -24,17 +49,17 @@ class Note: # 음표
     IMG_note_16up = pygame.image.load("images/note_sixteenth_up.png")
     IMG_note_16up = pygame.transform.scale(IMG_note_16up, (WIDTH, HEIGHT))
     IMG_SHARP = pygame.image.load("images/sharp.png")
-    IMG_SHARP = pygame.transform.scale(IMG_SHARP, (37, 14 * 3))
+    IMG_SHARP = pygame.transform.scale(IMG_SHARP, (37, INTERVAL_LINE * 3))
     IMG_FLAT = pygame.image.load("images/flat.png")
-    IMG_FLAT = pygame.transform.scale(IMG_FLAT, (19, 14 * 3))
+    IMG_FLAT = pygame.transform.scale(IMG_FLAT, (19, INTERVAL_LINE * 3))
 
-    def __init__(self, screen, white_sounds, black_sounds, pitch, note=4):
+    def __init__(self, screen, white_sounds, black_sounds, pitch, note = 4):
         self.screen = screen
         self.WHITE_SOUNDS = white_sounds
         self.BLACK_SOUNDS = black_sounds
 
-        self.set_pitch(pitch)
-        self.note = note
+        self.set_pitch(pitch) # 음(CDEFGAB)
+        self.note = note # 2, 4, 8, 16분 음표
         self.set_image()
         self.set_sound()
 
@@ -51,23 +76,23 @@ class Note: # 음표
         # 4옥타브 시를 넘어서 음표 꼬리를 밑으로 내리는 가
         if index_pitch < index_B4:
             self.is_down = True
-            if self.note == 2:
+            if self.note == 2: # 2분음표
                 self.image = self.IMG_note_2
-            elif self.note == 4:
+            elif self.note == 4: # 4분음표
                 self.image = self.IMG_note_4
-            elif self.note == 8:
+            elif self.note == 8: # 8분음표
                 self.image = self.IMG_note_8
-            elif self.note == 16:
+            elif self.note == 16: # 16분음표
                 self.image = self.IMG_note_16
         else:
             self.is_down = False
-            if self.note == 2:
+            if self.note == 2: # 2분음표
                 self.image = self.IMG_note_2up
-            elif self.note == 4:
+            elif self.note == 4: # 4분음표
                 self.image = self.IMG_note_4up
-            elif self.note == 8:
+            elif self.note == 8: # 8분음표
                 self.image = self.IMG_note_8up
-            elif self.note == 16:
+            elif self.note == 16: # 16분음표
                 self.image = self.IMG_note_16up
 
     def get_pitch(self):
@@ -91,9 +116,9 @@ class Note: # 음표
 
     #음표 그리기
     def draw_note(self, step):
-        Y_C3 = 166  # 오선지 C4(도) 선 위치
-        Y_B4 = 212  # 오선지 B4(시) 선 위치
-        START_MARGIN = 42 + 22 + 10 # 높은음자리표w + 박자표w + a
+        Y_C3 = Y_SHEET + INTERVAL_LINE*3 + 4  # 오선지 C4(도) 선 위치(음표 꼬리 올림)
+        Y_B4 = Y_SHEET + INTERVAL_LINE*2 + self.HEIGHT + 4  # 오선지 B4(시) 선 위치(음표 꼬리 내림)
+        START_MARGIN = W_CLEF + W_METER + 10 # 높은음자리표w + 박자표w + a
         if step > 0:
             self.X = self.WIDTH + step
         else:
@@ -108,16 +133,20 @@ class Note: # 음표
 
         self.rect = self.image.get_rect()
 
+        # 음표 꼬리 설정
         if self.is_down:
-            self.rect.y = Y_C3 - level * 7 # 7 = 오선지 interval/2
+            self.rect.y = Y_C3 - level * INTERVAL_LINE/2 # 오선지 interval
         else:
-            self.rect.y = Y_B4 - level * 7
-        if '#' in self.pitch: # 반음이면 '#' 붙임
+            self.rect.y = Y_B4 - level * INTERVAL_LINE/2
+
+        # 반음에 '#' 붙임
+        if '#' in self.pitch:
             rect = self.IMG_SHARP.get_rect()
             self.X += 14
             rect.x = self.X - self.WIDTH + 4
             rect.y = self.rect.y + self.HEIGHT/2 + 2
             self.screen.blit(self.IMG_SHARP, rect)
+
         self.rect.x = self.X
         self.screen.blit(self.image, self.rect)
 

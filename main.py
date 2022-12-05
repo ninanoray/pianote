@@ -24,27 +24,6 @@ def draw_title_bar(screen, font, medium_font):
     title_text = font.render('Python Piano GUI', True, 'black')
     screen.blit(title_text, (12, 20))
 
-#오선지 그리기
-def draw_music_sheet(screen, width):
-    y = 120
-    height = 154
-    interval = 14
-    W_CLEF = 42
-    W_METER = 22
-
-    IMG_TREBLE_CLEF = pygame.image.load("images/treble_clef.png")
-    IMG_TREBLE_CLEF = pygame.transform.scale(IMG_TREBLE_CLEF, (W_CLEF, interval*6))
-    IMG_FOUR_FOURTH = pygame.image.load("images/four_fourth.png")
-    IMG_FOUR_FOURTH = pygame.transform.scale(IMG_FOUR_FOURTH, (W_METER, interval*4))
-
-    pygame.draw.rect(screen, 'white', [0, y, width, height])
-    for i in range(1, 6) :
-        pygame.draw.line(screen, 'black', [0, y + i * interval + interval],
-                         [width, y + i * interval + interval], 2)
-
-    screen.blit(IMG_TREBLE_CLEF, (0, y + interval))
-    screen.blit(IMG_FOUR_FOURTH, (W_CLEF, y + interval*2))
-
 #-----main-------------------------------------------------------------------------------------------------------------#
 if __name__ == '__main__':
     WHITE_SOUNDS = []
@@ -99,7 +78,7 @@ if __name__ == '__main__':
         # 제목/설명 출력
         draw_title_bar(screen, font, medium_font)
         # 오선지 그리기
-        draw_music_sheet(screen, WIDTH)
+        Note.draw_music_sheet(screen, WIDTH)
 
         for event in pygame.event.get():
             input_pitch = ""  # 입력한 음
@@ -218,6 +197,7 @@ if __name__ == '__main__':
 
         if input_notes:
             step = 0
+            # 음표를 옆으로 그려나감
             for note in input_notes:
                 # B4이하 음표 8분음표 16분음표 간격 조정
                 if note.get_note() > 4 and note.is_down:
@@ -225,19 +205,31 @@ if __name__ == '__main__':
                 else:
                     step = note.draw_note(step)
 
-            # 오선지 밖으로 넘어가면 오선지 다시 그림
-            if input_notes[-1].X > WIDTH - input_notes[-1].WIDTH:
-                count_music_sheet.append(input_notes.index(input_notes[-1]))
-                draw_music_sheet(screen, WIDTH)
-                step = 0
-                input_notes[-1].set_X(10)
-                step = input_notes[-1].draw_note(step)
-            # 음표를 삭제하다 이전 오선지로 돌아왔을때
-            elif input_notes[-1].X > WIDTH - input_notes[-1].WIDTH * 2:
-                if count_music_sheet:
-                    count_music_sheet.pop()
-                else: # 0 값은 최소한으로 넣어줌
-                    count_music_sheet.append(0)
+                # 오선지 윗선 넘어가면 음표에 줄표시
+                ADD = Note.INTERVAL_LINE
+                if (note.rect.y < Note.Y_SHEET + ADD) and not note.is_down:
+                    pygame.draw.line(screen, 'black', [note.rect.x - 2, Note.Y_SHEET + ADD],
+                                     [note.rect.x + 22, Note.Y_SHEET + ADD], 2)
+                # 오선지 아랫선 넘어가면 음표에 줄표시
+                BOTTOM_SHEET = Note.Y_SHEET + ADD * 7
+                NOTE_HEAD = note.rect.y + note.HEIGHT
+                A = 2 # 조정값
+                for i in range(4):
+                    if (BOTTOM_SHEET + ADD*i + A < NOTE_HEAD) and note.is_down:
+                        pygame.draw.line(screen, 'black', [note.rect.x - 2, BOTTOM_SHEET + ADD*i],
+                                         [note.rect.x + 22, BOTTOM_SHEET + ADD*i], 2)
+
+                # 오선지 밖으로 넘어가면 오선지 다시 그림
+                if note.X > WIDTH - note.WIDTH:
+                    count_music_sheet.append(input_notes.index(note))
+                    Note.draw_music_sheet(screen, WIDTH)
+                    step = 0
+                    note.set_X(10)
+                    step = note.draw_note(step)
+                # 음표를 삭제하다 이전 오선지로 돌아왔을때
+                elif note.X > WIDTH - note.WIDTH * 2:
+                    if count_music_sheet[-1] != 0:
+                        count_music_sheet.pop()
 
         pygame.display.flip()
 
