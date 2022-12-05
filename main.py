@@ -4,7 +4,7 @@ import piano_gui as gui
 from pygame import mixer
 
 #-----전역 변수---------------------------------------------------------------------------------------------------------#
-global WHITE_SOUNDS, BLACK_SOUNDS
+global WHITE_SOUNDS, BLACK_SOUNDS # 백건/흑건 소리
 
 #-----클래스 선언-------------------------------------------------------------------------------------------------------#
 class Note: # 음표
@@ -206,10 +206,11 @@ if __name__ == '__main__':
     # 피아노 GUI 클래스
     gui_piano = gui.PianoGUI(screen, WIDTH, HEIGHT, WHITE_SOUNDS, BLACK_SOUNDS, small_font, real_small_font)
 
-    # 오선지를 새로 쓰면 가려진 음표는 클릭 못하게 하기 위함
+    # 해당 리스트의 마지막 값 == 클릭 가능한 음표의 시작 인덱스
     count_music_sheet = [0]
 
     run = True
+    offset_note_input = 0
     while run:
         timer.tick(FPS)
         screen.fill('gray')
@@ -225,7 +226,6 @@ if __name__ == '__main__':
 
             # 마우스 클릭
             if event.type == pygame.MOUSEBUTTONDOWN:
-                print(event.button)
                 black_key = False
                 for i in range(len(black_keys)):
                     if black_keys[i].collidepoint(event.pos):
@@ -240,17 +240,21 @@ if __name__ == '__main__':
                 if input_notes:
                     for i in range(count_music_sheet[-1], len(input_notes)):
                         if input_notes[i].rect.collidepoint(event.pos):
+                            # 좌클릭 : 클릭한 음표로 입력커서 이동
+                            if event.button == 1:
+                                offset_note_input = i + 1
+                                break
                             # 우클릭 : 클릭한 음표 삭제
                             if event.button == 3:
                                 input_notes.pop(i)
                                 break
-
-                            # 휠업(4)/다운(5) : 음표 길어짐, 음표 짧아짐
+                            # 휠업(4) : 음표 길어짐
                             tmp = input_notes.pop(i)
                             th = tmp.get_note()
                             if event.button == 5:
                                 if th < 9:
                                     th = int(th * 2)
+                            # 휠다운(5) : 음표 짧아짐
                             if event.button == 4:
                                 if th > 2:
                                     th = int(th / 2)
@@ -292,7 +296,8 @@ if __name__ == '__main__':
                     print(f'입력: {input_pitch}')
                     # Note 객체 생성
                     note = Note(screen, input_pitch)
-                    input_notes.append(note)
+                    input_notes.insert(offset_note_input, note)
+                    offset_note_input += 1
 
 
             # 키보드 키 이벤트
@@ -340,13 +345,19 @@ if __name__ == '__main__':
                 else:
                     step = note.draw_note(step)
 
-                # 오선지 밖으로 넘어가면 오선지 다시 그림
-                if note.X > WIDTH - note.WIDTH:
-                    count_music_sheet.append(input_notes.index(note))
-                    draw_music_sheet(screen, WIDTH)
-                    step = 0
-                    note.set_X(10)
-                    step = note.draw_note(step)
+            # 오선지 밖으로 넘어가면 오선지 다시 그림
+            if input_notes[-1].X > WIDTH - input_notes[-1].WIDTH:
+                count_music_sheet.append(input_notes.index(input_notes[-1]))
+                draw_music_sheet(screen, WIDTH)
+                step = 0
+                input_notes[-1].set_X(10)
+                step = input_notes[-1].draw_note(step)
+            # 음표를 삭제하다 이전 오선지로 돌아왔을때
+            elif input_notes[-1].X > WIDTH - input_notes[-1].WIDTH * 2:
+                if count_music_sheet:
+                    count_music_sheet.pop()
+                else: # 0 값은 최소한으로 넣어줌
+                    count_music_sheet.append(0)
 
         pygame.display.flip()
 
