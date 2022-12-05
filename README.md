@@ -9,7 +9,7 @@ This is python project for oss class
 ### 피아노 조작
 
 1. 키보드 키로 피아노 조작 가능(음표 작성)  
-오른손 키 레이아웃 : w 3 e 4 r 5 t   y 7 u 8 i   o 0 p - [ = ]
+오른손 키 레이아웃 : w 3 e 4 r 5 t   y 7 u 8 i   o 0 p - [ = ]  
 왼손 키 레이아웃 : z s x d c   v g b h n j m
 1. 좌우 방향키로 오른손 키 레이아웃의 옥타브 이동가능
 1. 상하 방향키로 왼손 키 레이아웃의 옥타브 이동가능
