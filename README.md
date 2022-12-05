@@ -3,7 +3,9 @@
 This is python project for oss class  
 
 ##현재기능
+
 ###피아노 조작
+
 1. 키보드 키로 피아노 조작 가능(음표 작성)  
 오른손 키 레이아웃 : w3e4r5t y7u8i o0p-[=]
 왼손 키 레이아웃 : zsxdc vgbhnjm
@@ -13,6 +15,7 @@ This is python project for oss class
 1. ESC 키를 누르면 프로그램이 종료되고 지금까지 입력된 악보 저장  
 
 ###음표조작
+
 1. 음표 좌클릭
 1. 음표 우클릭시 클릭한 음표 삭제
 1. DELETE 키를 누르면 가장 마지막에 쓰인 음표 삭제
