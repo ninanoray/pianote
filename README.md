@@ -1,7 +1,7 @@
 # Pianote
-피아노 GUI로 작곡하는 프로그램  
-Note : 음표(2분음표, 4분음표, 8분음표, 16분음표)
-Pitch : 음(C D E F G A B, 도레미파솔라시)  
+### 피아노 GUI로 작곡하는 프로그램  
+**Note** : 음표(2분음표, 4분음표, 8분음표, 16분음표)  
+**Pitch** : 음(C D E F G A B, 도레미파솔라시)  
 This is python project for oss class
 
 <br/>
