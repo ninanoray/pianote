@@ -1,6 +1,9 @@
 import pygame
 import piano_lists as pl
 
+# 소리 파일 : main.py 에서 받는다
+WHITE_SOUNDS = []
+BLACK_SOUNDS = []
 
 # 오선지 요소(오선지 5줄)
 INTERVAL_LINE = 14 # 선 사이 간격
@@ -53,10 +56,8 @@ class Note: # 음표
     IMG_FLAT = pygame.image.load("images/flat.png")
     IMG_FLAT = pygame.transform.scale(IMG_FLAT, (19, INTERVAL_LINE * 3))
 
-    def __init__(self, screen, white_sounds, black_sounds, pitch, note = 4):
+    def __init__(self, screen, pitch, note = 4):
         self.screen = screen
-        self.WHITE_SOUNDS = white_sounds
-        self.BLACK_SOUNDS = black_sounds
 
         self.set_pitch(pitch) # 음(CDEFGAB)
         self.note = note # 2, 4, 8, 16분 음표
@@ -106,11 +107,11 @@ class Note: # 음표
     def set_sound(self):
         if '#' not in self.pitch:
             index_sound = pl.white_pitches.index(self.pitch)
-            self.sound = self.WHITE_SOUNDS[index_sound]
+            self.sound = WHITE_SOUNDS[index_sound]
         else:
             pitch = self.pitch.replace('#', 's')
             index_sound = pl.black_pitches.index(pitch)
-            self.sound = self.BLACK_SOUNDS[index_sound]
+            self.sound = BLACK_SOUNDS[index_sound]
     def get_sound(self):
         return self.sound
 
@@ -119,6 +120,7 @@ class Note: # 음표
         Y_C3 = Y_SHEET + INTERVAL_LINE*3 + 4  # 오선지 C4(도) 선 위치(음표 꼬리 올림)
         Y_B4 = Y_SHEET + INTERVAL_LINE*2 + self.HEIGHT + 4  # 오선지 B4(시) 선 위치(음표 꼬리 내림)
         START_MARGIN = W_CLEF + W_METER + 10 # 높은음자리표w + 박자표w + a
+
         if step > 0:
             self.X = self.WIDTH + step
         else:

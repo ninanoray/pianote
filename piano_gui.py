@@ -1,11 +1,14 @@
 import pygame
 import piano_lists as pl
 
+# 소리를 출력하는 건반 효과
+active_whites = []
+active_blacks = []
+
 class PianoGUI:
     MIN_OCT = 3 # 최소 옥타브
 
-    def __init__(self, screen, width, height,
-                 white_sounds, black_sounds, small_font, real_small_font):
+    def __init__(self, screen, width, height, font_1, font_2):
         self.screen = screen
 
         self.WIDTH = width
@@ -14,16 +17,13 @@ class PianoGUI:
         self.left_oct = self.MIN_OCT + 1
         self.right_oct = self.MIN_OCT + 2
 
-        self.white_sounds = white_sounds
-        self.black_sounds = black_sounds
-
         self.left_hand = pl.left_hand
         self.right_hand = pl.right_hand
         self.white_labels = pl.white_pitches # 백건
         self.black_labels = pl.black_labels # 흑건
 
-        self.small_font = small_font
-        self.real_small_font = real_small_font
+        self.small_font = font_1
+        self.real_small_font = font_2
 
         self.update_keys_set()
 
@@ -71,7 +71,7 @@ class PianoGUI:
                            ']': f'B{self.right_oct}'}
 
     # 피아노 모양 생성
-    def draw_piano(self, whites, blacks):
+    def draw_piano(self):
         white_w = 35
         white_h = 200
         black_w = 24
@@ -89,12 +89,12 @@ class PianoGUI:
             key_label = self.small_font.render(self.white_labels[i], True, 'black')
             self.screen.blit(key_label, (i * white_w + 8, self.HEIGHT - 20))
         # 키 누름 표시
-        for i in range(len(whites)):
-            if whites[i][1] > 0:
-                j = whites[i][0]
+        for i in range(len(active_whites)):
+            if active_whites[i][1] > 0:
+                j = active_whites[i][0]
                 pygame.draw.rect(self.screen, 'green',
                                  [j*white_w, self.HEIGHT-white_h, white_w, white_h], 2, 2)
-                whites[i][1] -= 1
+                active_whites[i][1] -= 1
 
         # 흑건
         LINE_CDE = 2 # 도레미 흑건
@@ -108,13 +108,13 @@ class PianoGUI:
                                     [black_w + (i*white_w) + (skip_count*white_w),
                                      self.HEIGHT-white_h, black_w, black_h], 0, 2)
             # 키 누름 표시
-            for q in range(len(blacks)):
-                if blacks[q][0] == i:
-                    if blacks[q][1] > 0:
+            for q in range(len(active_blacks)):
+                if active_blacks[q][0] == i:
+                    if active_blacks[q][1] > 0:
                         pygame.draw.rect(self.screen, 'green',
                                          [black_w + (i*white_w) + (skip_count*white_w),
                                           self.HEIGHT-white_h, black_w, black_h], 2, 2)
-                        blacks[q][1] -= 1
+                        active_blacks[q][1] -= 1
             # 노트 이름 텍스트
             key_label = self.real_small_font.render(self.black_labels[i], True, 'white')
             self.screen.blit(key_label,
@@ -132,7 +132,7 @@ class PianoGUI:
                 skip_track = 0
                 skip_count += 1
 
-        return white_rects, black_rects, whites, blacks
+        return white_rects, black_rects
 
     # 키설명
     def draw_hands(self):
