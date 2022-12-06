@@ -11,7 +11,6 @@ import note as Note
 
 #-----클래스 선언-------------------------------------------------------------------------------------------------------#
 
-
 #-----함수 선언---------------------------------------------------------------------------------------------------------#
 #GUI 제목/설명
 def draw_title_bar(screen, font, medium_font):
@@ -25,6 +24,55 @@ def draw_title_bar(screen, font, medium_font):
     screen.blit(title_text, (10, 18))
     title_text = font.render('Python Piano GUI', True, 'black')
     screen.blit(title_text, (12, 20))
+
+# 텍스트(파일명)를 받는 GUI
+def input_text_gui(screen, font, text, input):
+    img_text_1 = font.render(text, True, 'black') # 설명 문구
+    img_text_2 = font.render("Type filename :", True, 'blue')
+    rect_text_1 = img_text_1.get_rect()
+    rect_text_2 = img_text_2.get_rect()
+    rect_text_1.topleft = (40, 50)
+    rect_text_2.topleft = (40, 100)
+
+    img_input = font.render(input, True, 'green') # 텍스트 입력창
+    rect = img_input.get_rect()
+    rect.topleft = (200, 100)
+    cursor = pygame.Rect(rect.topright, (2, rect.height))
+
+    timer_event = pygame.USEREVENT + 1
+    pygame.time.set_timer(timer_event, 500)
+    time_counter = 0
+
+    run = True
+    while(run):
+        screen.fill('white')
+        screen.blit(img_text_1, rect_text_1)
+        screen.blit(img_text_2, rect_text_2)
+        screen.blit(img_input, rect)
+        if time_counter % 2: # 커서 깜박임
+            pygame.draw.rect(screen, 'red', cursor)
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    if len(input) > 0:
+                        input = input[:-1]
+                else:
+                    input += event.unicode
+                img_input = font.render(input, True, 'green')
+                rect.size = img_input.get_size()
+                cursor.topleft = rect.topright
+                
+                # Enter 누르면 종료
+                if event.key == 13:
+                    run = False
+
+            if event.type == timer_event:
+                time_counter +=1
+
+        pygame.display.update()
+
+    return input
 
 #-----main-------------------------------------------------------------------------------------------------------------#
 if __name__ == '__main__':
@@ -49,18 +97,6 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode([WIDTH, HEIGHT])
     timer = pygame.time.Clock()
 
-    # 악보 파일 가져오기
-    print("악보 파일(.csv)을 가져오시겠습니까?(y/아무거나)")
-    is_yes = input()
-    if is_yes == "y":
-        print("파일명을 입력하세요: ")
-        filename_score = input()
-        read_score = open(f"scores/{filename_score}.csv", 'r')
-        reader = csv.reader(read_score)
-        input_notes = [Note.Note(screen, note_info[0], int(note_info[1])) for note_info in reader]
-    else:
-        input_notes = []  # 프로그램에서 사용자가 입력할 악보 정보
-
     # 폰트
     font = pygame.font.SysFont('arial', 48)
     medium_font = pygame.font.SysFont('arial', 28)
@@ -79,11 +115,23 @@ if __name__ == '__main__':
     # 피아노 GUI 클래스
     gui_piano = GUI.PianoGUI(screen, WIDTH, HEIGHT, small_font, real_small_font)
 
-    # 해당 리스트의 마지막 값 == 클릭 가능한 음표의 시작 인덱스
-    count_music_sheet = [0]
+    input_notes = [] # 프로그램에서 사용자가 입력할 악보 정보
+    count_music_sheet = [0] # 해당 리스트의 마지막 값 == 클릭 가능한 음표의 시작 인덱스
+    offset_note_input = 0 # 음표 입력 커서 오프셋
 
+    #-------------------------------------------1 파일명 입력 받아 파일 불러오기------------------------------------------#
+    input_filename = ''  # 파일명
+    explanation = "If you want to open score type the filename and press Enter, if you don't just press Enter"
+    input_filename = input_text_gui(screen, medium_font, explanation, input_filename)
+    print(input_filename)
+
+    if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
+        read_score = open(f"scores/{input_filename[:-1]}.csv", 'r')
+        reader = csv.reader(read_score)
+        input_notes = [Note.Note(screen, note_info[0], int(note_info[1])) for note_info in reader]
+
+    #---------------------------------------------------2. 피아노 GUI---------------------------------------------------#
     run = True
-    offset_note_input = 0
     while run:
         timer.tick(FPS)
         screen.fill('gray')
@@ -167,7 +215,7 @@ if __name__ == '__main__':
                 # 입력한 음 저장
                 if (input_pitch != ""):
                     print(f'입력: {input_pitch}')
-                    #==================Note 객체 생성===================
+                    #================== Note 객체 생성 ===================#
                     note = Note.Note(screen, input_pitch)
                     input_notes.insert(offset_note_input, note)
                     offset_note_input += 1
