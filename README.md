@@ -22,8 +22,8 @@
 1. 상하방향키(↑↓)로 왼손 키 레이아웃의 옥타브 이동가능
 1. 마우스로 피아노 건반 클릭시 소리 출력은 가능(단, 음표가 입력되지는 않음)
 1. **ESC** 키를 누르면 프로그램이 종료되고 지금까지 입력된 악보 저장
-1. **ENTER** 키를 누르면 지금까지 작성한 악보 재생
-
+1. **ENTER** 키를 누르면 지금까지 작성한 악보 재생  
+<br/>
 ### 음표 조작
 1. 음표 좌클릭시 클릭한 음표 다음부터 입력커서 이동
 1. 음표 우클릭시 클릭한 음표 삭제
@@ -36,8 +36,8 @@
 ## 참고자료
 
 ### 피아노 GUI 디자인 및 기능 설정 참고
-+ plemaster01의 PythonPiano : [Git link](https://github.com/plemaster01/PythonPiano/blob/main/main.py)
-
++ plemaster01의 PythonPiano : [Git link](https://github.com/plemaster01/PythonPiano/blob/main/main.py)  
+<br/>
 ### 원본 음원 파일 정보
 [University of IOWA : Electronic Music Studios](https://theremin.music.uiowa.edu/MISpiano.html)  
 + Please consider making a tax-deductible donation to fund the next phase of this project. Beginning in 2012, instruments are being recorded at 24/96 with three mics for mono and stereo files that are archived into Zip files. For online listening, these notes are also organized into 16/44.1 chromatic scale files. Each instrument in the collection will be re-recorded with a variety of articulations, legato, glissandi, multiphonics, extended techniques, and in combination with other instruments. New instruments, such as the recently added guitar, will also be recorded. These freely available recordings have been used by countless musicians and in over 270 research papers. When making a donation, please write "Electronic Music Studios" in the comments field.
