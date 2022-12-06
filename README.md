@@ -23,6 +23,7 @@
 1. 마우스로 피아노 건반 클릭시 소리 출력은 가능(단, 음표가 입력되지는 않음)
 1. **ESC** 키를 누르면 프로그램이 종료되고 지금까지 입력된 악보 저장
 1. **ENTER** 키를 누르면 지금까지 작성한 악보 재생  
+<br/>
 
 ### 음표 조작
 1. 음표 좌클릭시 클릭한 음표 다음부터 입력커서 이동
@@ -37,6 +38,7 @@
 
 ### 피아노 GUI 디자인 및 기능 설정 참고
 + plemaster01의 PythonPiano : [Git link](https://github.com/plemaster01/PythonPiano/blob/main/main.py)  
+<br/>
 
 ### 원본 음원 파일 정보
 [University of IOWA : Electronic Music Studios](https://theremin.music.uiowa.edu/MISpiano.html)  
