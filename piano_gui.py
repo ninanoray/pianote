@@ -5,6 +5,9 @@ import piano_lists as pl
 active_whites = []
 active_blacks = []
 
+COL_HAND = (187, 146, 100)
+COL_ACTIVE = (239, 130, 3)
+
 class PianoGUI:
     MIN_OCT = 3 # 최소 옥타브
 
@@ -92,7 +95,7 @@ class PianoGUI:
         for i in range(len(active_whites)):
             if active_whites[i][1] > 0:
                 j = active_whites[i][0]
-                pygame.draw.rect(self.screen, 'green',
+                pygame.draw.rect(self.screen, COL_ACTIVE,
                                  [j*white_w, self.HEIGHT-white_h, white_w, white_h], 2, 2)
                 active_whites[i][1] -= 1
 
@@ -111,7 +114,7 @@ class PianoGUI:
             for q in range(len(active_blacks)):
                 if active_blacks[q][0] == i:
                     if active_blacks[q][1] > 0:
-                        pygame.draw.rect(self.screen, 'green',
+                        pygame.draw.rect(self.screen, COL_ACTIVE,
                                          [black_w + (i*white_w) + (skip_count*white_w),
                                           self.HEIGHT-white_h, black_w, black_h], 2, 2)
                         active_blacks[q][1] -= 1
@@ -142,7 +145,7 @@ class PianoGUI:
         rect_h = 30
 
         # 왼손
-        pygame.draw.rect(self.screen, 'dark gray',
+        pygame.draw.rect(self.screen, COL_HAND,
                          [((self.left_oct - self.MIN_OCT) * rect_w7),
                           self.HEIGHT - 60, rect_w7, rect_h], 0, 4)
         pygame.draw.rect(self.screen, 'black',
@@ -163,8 +166,8 @@ class PianoGUI:
             self.screen.blit(text, (((self.left_oct - 3) * 245) + 18 * i + blank_space, self.HEIGHT - 55))
 
         # 오른손
-        pygame.draw.rect(self.screen, 'dark gray', [((self.right_oct - self.MIN_OCT) * rect_w7 - rect_w * 4),
-                                                    self.HEIGHT - 86, rect_w11, rect_h], 0, 4)
+        pygame.draw.rect(self.screen, COL_HAND, [((self.right_oct - self.MIN_OCT) * rect_w7 - rect_w * 4),
+                                                 self.HEIGHT - 86, rect_w11, rect_h], 0, 4)
         pygame.draw.rect(self.screen, 'black', [((self.right_oct - self.MIN_OCT) * rect_w7 - rect_w * 4),
                                                 self.HEIGHT - 86, rect_w11, rect_h], 4, 4)
 

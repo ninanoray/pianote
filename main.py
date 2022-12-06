@@ -1,5 +1,4 @@
 import csv
-
 import pygame
 from pygame import mixer
 
@@ -7,11 +6,6 @@ import piano_lists as pl
 import piano_gui as GUI
 import note as Note
 
-#-----전역 변수---------------------------------------------------------------------------------------------------------#
-
-#-----클래스 선언-------------------------------------------------------------------------------------------------------#
-
-#-----함수 선언---------------------------------------------------------------------------------------------------------#
 #GUI 제목/설명
 def draw_title_bar(screen, font_1, font_2):
     # 타이틀
@@ -19,24 +13,39 @@ def draw_title_bar(screen, font_1, font_2):
     screen.blit(title_text, (10, 18))
     title_text = font_1.render('Pianote', True, 'black')
     screen.blit(title_text, (12, 20))
-    # 기능 설명
-    instruction_text = font_2.render('[↑↓] Key : Change Left octave', True, 'black')
-    screen.blit(instruction_text, (WIDTH - 480, 10))
-    instruction_text2 = font_2.render('[←→] Key : Change Right octave', True, 'black')
-    screen.blit(instruction_text2, (WIDTH - 480, 30))
+    intro_1 = 260
+    intro_2 = 600
+    # 기능 설명 : 키
+    instruction_text = font_2.render('[↑↓] 키 : 왼손 옥타브 변경', True, 'black')
+    screen.blit(instruction_text, (WIDTH - intro_1, 10))
+    instruction_text2 = font_2.render('[←→] 키 : 오른손 옥타브 변경', True, 'black')
+    screen.blit(instruction_text2, (WIDTH - intro_1, 30))
+    instruction_text3 = font_2.render('Delete 키 : 마지막 음표 삭제', True, 'black')
+    screen.blit(instruction_text3, (WIDTH - intro_1, 50))
+    instruction_text4 = font_2.render('Enter 키 : 악보 재생', True, 'blue')
+    screen.blit(instruction_text4, (WIDTH - intro_1, 70))
+    instruction_text5 = font_2.render('Esc 키 : Pianote 종료. 악보 저장.', True, 'red')
+    screen.blit(instruction_text5, (WIDTH - intro_1, 90))
+    # 기능 설명 : 음표클릭
+    instruction2_text = font_2.render('음표 좌클릭 : 클릭 음표 다음부터 입력', True, 'black')
+    screen.blit(instruction2_text, (WIDTH - intro_2, 10))
+    instruction2_text2 = font_2.render('음표 우클릭 : 클릭 음표 삭제', True, 'black')
+    screen.blit(instruction2_text2, (WIDTH - intro_2, 30))
+    instruction2_text3 = font_2.render('음표 휠업/휠다운 : 음표 길이 변경(?분음표)', True, 'black')
+    screen.blit(instruction2_text3, (WIDTH - intro_2, 50))
     
 # 텍스트(파일명)를 받는 GUI
 def input_text_gui(screen, font, text, input):
     img_text_1 = font.render(text, True, 'black') # 설명 문구
-    img_text_2 = font.render("Type filename :", True, 'blue')
+    img_text_2 = font.render("파일명 :", True, 'blue')
     rect_text_1 = img_text_1.get_rect()
     rect_text_2 = img_text_2.get_rect()
     rect_text_1.topleft = (40, 50)
     rect_text_2.topleft = (40, 100)
 
-    img_input = font.render(input, True, 'green') # 텍스트 입력창
+    img_input = font.render(input, True, 'red') # 텍스트 입력창
     rect = img_input.get_rect()
-    rect.topleft = (200, 100)
+    rect.topleft = (140, 100)
     cursor = pygame.Rect(rect.topright, (2, rect.height))
 
     timer_event = pygame.USEREVENT + 1
@@ -59,7 +68,7 @@ def input_text_gui(screen, font, text, input):
                         input = input[:-1]
                 else:
                     input += event.unicode
-                img_input = font.render(input, True, 'green')
+                img_input = font.render(input, True, 'red')
                 rect.size = img_input.get_size()
                 cursor.topleft = rect.topright
 
@@ -81,6 +90,9 @@ if __name__ == '__main__':
     
     FPS = 30
 
+    CUSTOM_COL_1 = (245, 230, 207)
+    CUSTOM_COL_2 = (187, 146, 100)
+
     piano_pitches = pl.piano_pitches
     white_pitches = pl.white_pitches
     black_pitches = pl.black_pitches
@@ -93,15 +105,17 @@ if __name__ == '__main__':
     # pygame 생성
     pygame.init()
     pygame.mixer.set_num_channels(50)
-    pygame.display.set_caption("Piano GUI")
+    pygame.display.set_caption("Pianote")
     screen = pygame.display.set_mode([WIDTH, HEIGHT])
     timer = pygame.time.Clock()
 
     # 폰트
-    font = pygame.font.SysFont('malgungothic', 48)
+    font = pygame.font.SysFont('arial', 60)
     medium_font = pygame.font.SysFont('arial', 28)
     small_font = pygame.font.SysFont('arial', 16)
     real_small_font = pygame.font.SysFont('arial', 10)
+    font_kor = pygame.font.SysFont('malgungothic', 16)
+    medium_font_kor = pygame.font.SysFont('malgungothic', 24)
 
     # 소리 파일
     for i in range(len(white_pitches)):
@@ -121,8 +135,8 @@ if __name__ == '__main__':
 
     #----- 1 파일명 입력 받아 파일 불러오기-------------------------------------------------------------------------------#
     input_filename = ''  # 파일명
-    explanation = "If you want to open score, type the filename and press [Enter]. If not just press [Enter]"
-    input_filename = input_text_gui(screen, medium_font, explanation, input_filename)
+    instruction = "[시작] 악보 파일명 입력 후 Enter (처음부터 시작 : 바로 Enter)"
+    input_filename = input_text_gui(screen, medium_font_kor, instruction, input_filename)
 
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
         read_score = open(f"scores/{input_filename[:-1]}.csv", 'r')
@@ -136,11 +150,11 @@ if __name__ == '__main__':
     run = True
     while run:
         timer.tick(FPS)
-        screen.fill('gray')
+        screen.fill(CUSTOM_COL_1)
         white_keys, black_keys = gui_piano.draw_piano()
         gui_piano.draw_hands()
         # 제목/설명 출력
-        draw_title_bar(screen, font, small_font)
+        draw_title_bar(screen, font, font_kor)
         # 오선지 그리기
         Note.draw_music_sheet(screen, WIDTH)
 
@@ -319,8 +333,8 @@ if __name__ == '__main__':
 
 #----- 3. 종료 후 악보 저장하기------------------------------------------------------------------------------------------#
     save_filename = ''  # 파일명
-    explanation_last = "If you want to save score, type a filename and press [Enter]. If not just press [Enter]"
-    save_filename = input_text_gui(screen, medium_font, explanation_last, save_filename)
+    explain_txt = "[종료] 저장할 악보 파일명 입력후 Enter (저장없이 종료 : 바로 Enter)"
+    save_filename = input_text_gui(screen, medium_font_kor, explain_txt, save_filename)
 
     if save_filename[:-1]:  # 아무것도 입력하지 않고 Enter 누르면 "\r"
         create_score = open(f'scores/{save_filename[:-1]}.csv', 'w', newline='')
