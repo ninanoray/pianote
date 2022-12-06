@@ -128,7 +128,7 @@ class Note: # 음표
 
         pitch_name = ""
         if len(self.pitch):
-            pitch_name = self.pitch[0:2]
+            pitch_name = self.pitch[0] + self.pitch[-1]
         index_C4 = pl.white_pitches.index("C4")
         index_pitch = pl.white_pitches.index(pitch_name)
         level = index_pitch - index_C4

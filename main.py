@@ -118,10 +118,12 @@ if __name__ == '__main__':
     medium_font_kor = pygame.font.SysFont('malgungothic', 24)
 
     # 소리 파일
-    for i in range(len(white_pitches)):
-        WHITE_SOUNDS.append(mixer.Sound(f'sound\\{white_pitches[i]}.wav'))
-    for i in range(len(black_pitches)):
-        BLACK_SOUNDS.append(mixer.Sound(f'sound\\{black_pitches[i]}.wav'))
+    for white_pitch in white_pitches:
+        WHITE_SOUNDS.append(mixer.Sound(f'sound\piano_main\\{white_pitch}.wav'))
+    for black_pitch in black_pitches:
+        BLACK_SOUNDS.append(mixer.Sound(f'sound\piano_main\\{black_pitch}.wav'))
+    SOUND_PLAY_SEC = 2000 # 사운드 재생값
+    print(BLACK_SOUNDS[0].get_length())
 
     Note.WHITE_SOUNDS = WHITE_SOUNDS
     Note.BLACK_SOUNDS = BLACK_SOUNDS
@@ -167,12 +169,12 @@ if __name__ == '__main__':
                 black_key = False
                 for i in range(len(black_keys)):
                     if black_keys[i].collidepoint(event.pos):
-                        BLACK_SOUNDS[i].play(0, 1000)
+                        BLACK_SOUNDS[i].play(0, SOUND_PLAY_SEC)
                         black_key = True
                         GUI.active_blacks.append([i, 30])
                 for i in range(len(white_keys)):
                     if white_keys[i].collidepoint(event.pos) and not black_key:
-                        WHITE_SOUNDS[i].play(0, 3000)
+                        WHITE_SOUNDS[i].play(0, SOUND_PLAY_SEC)
                         GUI.active_whites.append([i, 30])
                 # 음표 클릭
                 if input_notes:
@@ -214,25 +216,25 @@ if __name__ == '__main__':
                 if event.text.upper() in gui_piano.left_dict:
                     input_pitch = gui_piano.left_dict[event.text.upper()]
                     # 음 출력
-                    if gui_piano.left_dict[event.text.upper()][-1] == 's':
+                    if gui_piano.left_dict[event.text.upper()][1] == 's':
                         index = black_pitches.index(gui_piano.left_dict[event.text.upper()])
-                        BLACK_SOUNDS[index].play(0, 1000) # 소리 출력
+                        BLACK_SOUNDS[index].play(0, SOUND_PLAY_SEC) # 소리 출력
                         GUI.active_blacks.append([index, 30]) # 효과 출력
                     else:
                         index = white_pitches.index(gui_piano.left_dict[event.text.upper()])
-                        WHITE_SOUNDS[index].play(0, 1000)
+                        WHITE_SOUNDS[index].play(0, SOUND_PLAY_SEC)
                         GUI.active_whites.append([index, 30])
                 # 오른손
                 if event.text.upper() in gui_piano.right_dict:
                     input_pitch = gui_piano.right_dict[event.text.upper()]
                     # 음 출력
-                    if gui_piano.right_dict[event.text.upper()][-1] == 's':
+                    if gui_piano.right_dict[event.text.upper()][1] == 's':
                         index = black_pitches.index(gui_piano.right_dict[event.text.upper()])
-                        BLACK_SOUNDS[index].play(0, 1000)
+                        BLACK_SOUNDS[index].play(0, SOUND_PLAY_SEC)
                         GUI.active_blacks.append([index, 30])
                     else:
                         index = white_pitches.index(gui_piano.right_dict[event.text.upper()])
-                        WHITE_SOUNDS[index].play(0, 1000)
+                        WHITE_SOUNDS[index].play(0, SOUND_PLAY_SEC)
                         GUI.active_whites.append([index, 30])
                 # 입력한 음 저장
                 if (input_pitch != ""):
