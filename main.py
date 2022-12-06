@@ -121,16 +121,16 @@ if __name__ == '__main__':
 
     #----- 1 파일명 입력 받아 파일 불러오기-------------------------------------------------------------------------------#
     input_filename = ''  # 파일명
-    explanation = "If you want to open score, type the filename and press Enter. If not just press Enter"
+    explanation = "If you want to open score, type the filename and press [Enter]. If not just press [Enter]"
     input_filename = input_text_gui(screen, medium_font, explanation, input_filename)
 
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
         read_score = open(f"scores/{input_filename[:-1]}.csv", 'r')
         reader = csv.reader(read_score)
         input_notes = [Note.Note(screen, note_info[0], int(note_info[1])) for note_info in reader]
-        print(f'[START] 프로그램 시작. 불러온 악보 파일명 : {input_filename[:-1]}.csv\n')
+        print(f'[START] Pianote 시작. 불러온 악보 파일명 : {input_filename[:-1]}.csv\n')
     else:
-        print('[START] 프로그램 시작.\n')
+        print('[START] Pianote 처음 시작.\n')
 
     #----- 2. 피아노 GUI------------------------------------------------------------------------------------------------#
     run = True
@@ -167,6 +167,7 @@ if __name__ == '__main__':
                             # 좌클릭 : 클릭한 음표로 입력커서 이동
                             if event.button == 1:
                                 offset_note_input = i + 1
+                                print(f'[PIANOTE] 음표 입력커서 이동. offset: {offset_note_input}')
                                 break
                             # 우클릭 : 클릭한 음표 삭제
                             if event.button == 3:
@@ -234,15 +235,19 @@ if __name__ == '__main__':
                 if event.key == pygame.K_RIGHT:
                     if gui_piano.right_oct < 5:
                         gui_piano.set_right_oct(gui_piano.get_right_oct() + 1)
+                        print(f"[PIANOTE] 오른손 옥타브 : {gui_piano.get_right_oct()}")
                 if event.key == pygame.K_LEFT:
                     if gui_piano.right_oct > 4:
                         gui_piano.set_right_oct(gui_piano.get_right_oct() - 1)
+                        print(f"[PIANOTE] 오른손 옥타브 : {gui_piano.get_right_oct()}")
                 if event.key == pygame.K_UP:
                     if gui_piano.left_oct < 5:
                         gui_piano.set_left_oct(gui_piano.get_left_oct() + 1)
+                        print(f"[PIANOTE] 왼손 옥타브 : {gui_piano.get_left_oct()}")
                 if event.key == pygame.K_DOWN:
                     if gui_piano.left_oct > 3:
                         gui_piano.set_left_oct(gui_piano.get_left_oct() - 1)
+                        print(f"[PIANOTE] 왼손 옥타브 : {gui_piano.get_left_oct()}")
                 gui_piano.update_keys_set()
                 # delete 키 : 마지막 음표 삭제
                 if event.key == pygame.K_DELETE:
@@ -251,16 +256,18 @@ if __name__ == '__main__':
                         print(f'[PIANOTE] 음표 삭제: {removed_note.get_pitch()}({removed_note.get_note()}th)')
                 # Enter 키 : 악보 재생
                 if event.key == 13:
+                    print("[PIANOTE] 악보 재생 중..", end=' ')
                     if input_notes:
                         for note in input_notes:
                             # 4/4박자에서 4분음표 1초에 1개
                             time = int(1000 / (note.get_note()/4))
                             note.get_sound().play(0, 1000)
                             pygame.time.delay(time)
+                        print("재생 완료.")
 
                 # ESC 키 : 프로그램 종료
                 if event.key == pygame.K_ESCAPE:
-                    print("\n[END] 피아노 GUI 종료")
+                    print("\n[PIANOTE] Pianote GUI 종료")
                     run = False
 
 
@@ -306,21 +313,21 @@ if __name__ == '__main__':
 
     # 저장된 노트 정보
     saved_notes = [(note.get_pitch(), note.get_note()) for note in input_notes]
-    print('-------------------------------')
+    print('\n-------------------------------')
     print(f'입력한 음표 정보\n{saved_notes}')
     print('-------------------------------\n')
 
 #----- 3. 종료 후 악보 저장하기------------------------------------------------------------------------------------------#
     save_filename = ''  # 파일명
-    explanation_last = "If you want to save score, type a filename and press Enter. If not just press Enter"
+    explanation_last = "If you want to save score, type a filename and press [Enter]. If not just press [Enter]"
     save_filename = input_text_gui(screen, medium_font, explanation_last, save_filename)
 
     if save_filename[:-1]:  # 아무것도 입력하지 않고 Enter 누르면 "\r"
         create_score = open(f'scores/{save_filename[:-1]}.csv', 'w', newline='')
         writer = csv.writer(create_score)
         writer.writerows(saved_notes)
-        print(f"[END] 프로그램 종료. 저장한 악보 파일명 : {save_filename[:-1]}.csv")
+        print(f"[END] Pianote 종료. 저장한 악보 파일명 : {save_filename[:-1]}.csv")
     else:
-        print("[END] 프로그램 종료. 악보 저장 안함.")
+        print("[END] Pianote 종료. 악보 저장 안함.")
 
     pygame.quit()  # GUI 종료
