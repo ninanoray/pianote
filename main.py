@@ -13,18 +13,18 @@ import note as Note
 
 #-----함수 선언---------------------------------------------------------------------------------------------------------#
 #GUI 제목/설명
-def draw_title_bar(screen, font, medium_font):
-    instruction_text = medium_font.render('Up/Down Key Change Left Hand octave', True, 'black')
-    screen.blit(instruction_text, (WIDTH - 480, 10))
-    instruction_text2 = medium_font.render('Left/Right Key Change Right Hand octave', True, 'black')
-    screen.blit(instruction_text2, (WIDTH - 480, 50))
-    # img = pygame.transform.scale(pygame.image.load('logo.png'), [150, 150])
-    # screen.blit(img, (-20, -30))
-    title_text = font.render('Python Piano GUI', True, 'white')
+def draw_title_bar(screen, font_1, font_2):
+    # 타이틀
+    title_text = font_1.render('Pianote', True, 'white')
     screen.blit(title_text, (10, 18))
-    title_text = font.render('Python Piano GUI', True, 'black')
+    title_text = font_1.render('Pianote', True, 'black')
     screen.blit(title_text, (12, 20))
-
+    # 기능 설명
+    instruction_text = font_2.render('[↑↓] Key : Change Left octave', True, 'black')
+    screen.blit(instruction_text, (WIDTH - 480, 10))
+    instruction_text2 = font_2.render('[←→] Key : Change Right octave', True, 'black')
+    screen.blit(instruction_text2, (WIDTH - 480, 30))
+    
 # 텍스트(파일명)를 받는 GUI
 def input_text_gui(screen, font, text, input):
     img_text_1 = font.render(text, True, 'black') # 설명 문구
@@ -62,7 +62,7 @@ def input_text_gui(screen, font, text, input):
                 img_input = font.render(input, True, 'green')
                 rect.size = img_input.get_size()
                 cursor.topleft = rect.topright
-                
+
                 # Enter 누르면 종료
                 if event.key == 13:
                     run = False
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     WHITE_SOUNDS = []
     BLACK_SOUNDS = []
     
-    FPS = 60
+    FPS = 30
 
     piano_pitches = pl.piano_pitches
     white_pitches = pl.white_pitches
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     timer = pygame.time.Clock()
 
     # 폰트
-    font = pygame.font.SysFont('arial', 48)
+    font = pygame.font.SysFont('malgungothic', 48)
     medium_font = pygame.font.SysFont('arial', 28)
     small_font = pygame.font.SysFont('arial', 16)
     real_small_font = pygame.font.SysFont('arial', 10)
@@ -119,18 +119,20 @@ if __name__ == '__main__':
     count_music_sheet = [0] # 해당 리스트의 마지막 값 == 클릭 가능한 음표의 시작 인덱스
     offset_note_input = 0 # 음표 입력 커서 오프셋
 
-    #-------------------------------------------1 파일명 입력 받아 파일 불러오기------------------------------------------#
+    #----- 1 파일명 입력 받아 파일 불러오기-------------------------------------------------------------------------------#
     input_filename = ''  # 파일명
-    explanation = "If you want to open score type the filename and press Enter, if you don't just press Enter"
+    explanation = "If you want to open score, type the filename and press Enter. If not just press Enter"
     input_filename = input_text_gui(screen, medium_font, explanation, input_filename)
-    print(input_filename)
 
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
         read_score = open(f"scores/{input_filename[:-1]}.csv", 'r')
         reader = csv.reader(read_score)
         input_notes = [Note.Note(screen, note_info[0], int(note_info[1])) for note_info in reader]
+        print(f'[START] 프로그램 시작. 불러온 악보 파일명 : {input_filename[:-1]}.csv\n')
+    else:
+        print('[START] 프로그램 시작.\n')
 
-    #---------------------------------------------------2. 피아노 GUI---------------------------------------------------#
+    #----- 2. 피아노 GUI------------------------------------------------------------------------------------------------#
     run = True
     while run:
         timer.tick(FPS)
@@ -138,7 +140,7 @@ if __name__ == '__main__':
         white_keys, black_keys = gui_piano.draw_piano()
         gui_piano.draw_hands()
         # 제목/설명 출력
-        draw_title_bar(screen, font, medium_font)
+        draw_title_bar(screen, font, small_font)
         # 오선지 그리기
         Note.draw_music_sheet(screen, WIDTH)
 
@@ -168,18 +170,23 @@ if __name__ == '__main__':
                                 break
                             # 우클릭 : 클릭한 음표 삭제
                             if event.button == 3:
+                                print(f'[PIANOTE] 음표 삭제: {input_notes[i].get_pitch()}({input_notes[i].get_note()}th)')
                                 input_notes.pop(i)
                                 break
                             # 휠업(4) : 음표 길어짐
                             tmp = input_notes.pop(i)
                             th = tmp.get_note()
                             if event.button == 5:
+                                print(f'[PIANOTE] 음표({tmp.get_pitch()}) note 변경: {th}분음표 →', end=' ')
                                 if th < 9:
                                     th = int(th * 2)
+                                print(f'{th}분음표')
                             # 휠다운(5) : 음표 짧아짐
                             if event.button == 4:
+                                print(f'[PIANOTE] 음표({tmp.get_pitch()}) note 변경: {th}분음표 →', end=' ')
                                 if th > 2:
                                     th = int(th / 2)
+                                print(f'{th}분음표')
                             tmp.set_note(th)
                             tmp.set_image()
                             tmp.draw_note(tmp.X)
@@ -214,7 +221,7 @@ if __name__ == '__main__':
                         GUI.active_whites.append([index, 30])
                 # 입력한 음 저장
                 if (input_pitch != ""):
-                    print(f'입력: {input_pitch}')
+                    print(f'[PIANOTE] 음표 입력: {input_pitch}')
                     #================== Note 객체 생성 ===================#
                     note = Note.Note(screen, input_pitch)
                     input_notes.insert(offset_note_input, note)
@@ -241,7 +248,7 @@ if __name__ == '__main__':
                 if event.key == pygame.K_DELETE:
                     if input_notes:
                         removed_note = input_notes.pop()
-                        print(f'삭제: {removed_note.get_pitch()}({removed_note.get_note()}th)')
+                        print(f'[PIANOTE] 음표 삭제: {removed_note.get_pitch()}({removed_note.get_note()}th)')
                 # Enter 키 : 악보 재생
                 if event.key == 13:
                     if input_notes:
@@ -253,7 +260,7 @@ if __name__ == '__main__':
 
                 # ESC 키 : 프로그램 종료
                 if event.key == pygame.K_ESCAPE:
-                    print("GUI program 종료")
+                    print("\n[END] 피아노 GUI 종료")
                     run = False
 
 
@@ -295,21 +302,25 @@ if __name__ == '__main__':
 
         pygame.display.flip()
 
-    pygame.quit() # GUI 종료
+    # pygame.quit() # GUI 종료
 
     # 저장된 노트 정보
     saved_notes = [(note.get_pitch(), note.get_note()) for note in input_notes]
-    print(saved_notes)
+    print('-------------------------------')
+    print(f'입력한 음표 정보\n{saved_notes}')
+    print('-------------------------------\n')
 
-    # 저장된 노트 정보로 csv 악보 파일 만들기
-    print("\n악보를 저장하시겠습니까?(y/아무거나)")
-    yes = input()
-    if yes == "y":
-        print("파일 이름을 입력하세요: ")
-        filename = input()
-        create_score = open(f'scores/{filename}.csv', 'w', newline='')
+#----- 3. 종료 후 악보 저장하기------------------------------------------------------------------------------------------#
+    save_filename = ''  # 파일명
+    explanation_last = "If you want to save score, type a filename and press Enter. If not just press Enter"
+    save_filename = input_text_gui(screen, medium_font, explanation_last, save_filename)
+
+    if save_filename[:-1]:  # 아무것도 입력하지 않고 Enter 누르면 "\r"
+        create_score = open(f'scores/{save_filename[:-1]}.csv', 'w', newline='')
         writer = csv.writer(create_score)
         writer.writerows(saved_notes)
+        print(f"[END] 프로그램 종료. 저장한 악보 파일명 : {save_filename[:-1]}.csv")
     else:
-        print("저장하지 않고 종료했습니다")
-        
+        print("[END] 프로그램 종료. 악보 저장 안함.")
+
+    pygame.quit()  # GUI 종료
