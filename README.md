@@ -54,6 +54,6 @@
 + Format :	16-bit, 44.1 kHz, stereo
 + Comments : stereo, non-anechoic recording  
 <br/>
-위 무료 음원을 .wav로 변환,<br/>
-음원을 trim하여 음 시작점을 맞추는 작업을 하고<br/>
+위 무료 음원을 .wav로 변환,  
+음원을 trim하여 음 시작점을 맞추는 작업을 하고  
 포맷에 맞게 파일명을 수정해서 사용하였음.
