@@ -122,7 +122,7 @@ if __name__ == '__main__':
         WHITE_SOUNDS.append(mixer.Sound(f'sound\piano_main\\{white_pitch}.wav'))
     for black_pitch in black_pitches:
         BLACK_SOUNDS.append(mixer.Sound(f'sound\piano_main\\{black_pitch}.wav'))
-    SOUND_PLAY_SEC = 2000 # 사운드 재생값
+    SOUND_PLAY_SEC = 2000 # 사운드 재생 시간
     print(BLACK_SOUNDS[0].get_length())
 
     Note.WHITE_SOUNDS = WHITE_SOUNDS
@@ -277,7 +277,7 @@ if __name__ == '__main__':
                         for note in input_notes:
                             # 4/4박자에서 4분음표 1초에 1개
                             time = int(1000 / (note.get_note()/4))
-                            note.get_sound().play(0, 1000)
+                            note.get_sound().play(0, SOUND_PLAY_SEC)
                             pygame.time.delay(time)
                         print("재생 완료.")
 
