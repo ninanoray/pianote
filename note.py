@@ -20,7 +20,7 @@ def draw_music_sheet(screen, width_gui):
     IMG_FOUR_FOURTH = pygame.transform.scale(IMG_FOUR_FOURTH, (W_METER, INTERVAL_LINE * 4))
 
     # 오선지 배경 그리기
-    pygame.draw.rect(screen, 'white', [0, Y_SHEET, width_gui, H_SHEET])
+    pygame.draw.rect(screen, 'white', [0, Y_SHEET, width_gui, H_SHEET + INTERVAL_LINE]) # INTERVAL_LINE 그냥 추가 여백
     # 오선지 선 그리기
     for i in range(0, 5):
         pygame.draw.line(screen, 'black', [0, Y_SHEET + (i + 2) * INTERVAL_LINE], # 외부 간격 위: 2칸
@@ -128,7 +128,7 @@ class Note: # 음표
 
         pitch_name = ""
         if len(self.pitch):
-            pitch_name = self.pitch[0:2]
+            pitch_name = self.pitch[0] + self.pitch[-1]
         index_C4 = pl.white_pitches.index("C4")
         index_pitch = pl.white_pitches.index(pitch_name)
         level = index_pitch - index_C4
@@ -146,7 +146,10 @@ class Note: # 음표
             rect = self.IMG_SHARP.get_rect()
             self.X += 14
             rect.x = self.X - self.WIDTH + 4
-            rect.y = self.rect.y + self.HEIGHT/2 + 2
+            if self.is_down:
+                rect.y = self.rect.y + self.HEIGHT/2 + 2
+            else:
+                rect.y = self.rect.y - INTERVAL_LINE
             self.screen.blit(self.IMG_SHARP, rect)
 
         self.rect.x = self.X
