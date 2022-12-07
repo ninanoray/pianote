@@ -4,8 +4,9 @@ from pygame import mixer
 
 import piano_lists as pl
 import piano_gui as GUI
-import note as Note
+import note as NOTE
 
+#-----함수선언----------------------------------------------------------------------------------------------------------#
 #GUI 제목/설명
 def draw_title_bar(screen, font_1, font_2):
     # 타이틀
@@ -100,7 +101,7 @@ if __name__ == '__main__':
     WIDTH = 50 * len(white_pitches)
     HEIGHT = 500
 
-    #########################################################
+    #------------------------------------------------#
 
     # pygame 생성
     pygame.init()
@@ -125,8 +126,8 @@ if __name__ == '__main__':
     SOUND_PLAY_SEC = 2000 # 사운드 재생 시간
     print(BLACK_SOUNDS[0].get_length())
 
-    Note.WHITE_SOUNDS = WHITE_SOUNDS
-    Note.BLACK_SOUNDS = BLACK_SOUNDS
+    NOTE.WHITE_SOUNDS = WHITE_SOUNDS
+    NOTE.BLACK_SOUNDS = BLACK_SOUNDS
 
     # 피아노 GUI 클래스
     gui_piano = GUI.PianoGUI(screen, WIDTH, HEIGHT, small_font, real_small_font)
@@ -143,7 +144,7 @@ if __name__ == '__main__':
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
         read_score = open(f"scores/{input_filename[:-1]}.csv", 'r')
         reader = csv.reader(read_score)
-        input_notes = [Note.Note(screen, note_info[0], int(note_info[1])) for note_info in reader]
+        input_notes = [NOTE.Note(screen, note_info[0], int(note_info[1])) for note_info in reader]
         print(f'[START] Pianote 시작. 불러온 악보 파일명 : {input_filename[:-1]}.csv\n')
     else:
         print('[START] Pianote 처음 시작.\n')
@@ -158,7 +159,7 @@ if __name__ == '__main__':
         # 제목/설명 출력
         draw_title_bar(screen, font, font_kor)
         # 오선지 그리기
-        Note.draw_music_sheet(screen, WIDTH)
+        NOTE.draw_music_sheet(screen, WIDTH)
 
         for event in pygame.event.get():
             input_pitch = ""  # 입력한 음
@@ -240,8 +241,8 @@ if __name__ == '__main__':
                 if (input_pitch != ""):
                     print(f'[PIANOTE] 음표 입력: {input_pitch}')
                     #================== Note 객체 생성 ===================#
-                    note = Note.Note(screen, input_pitch)
-                    input_notes.insert(offset_note_input, note)
+                    new_note = NOTE.Note(screen, input_pitch)
+                    input_notes.insert(offset_note_input, new_note)
                     offset_note_input += 1
 
 
@@ -298,12 +299,12 @@ if __name__ == '__main__':
                     step = note.draw_note(step)
 
                 # 오선지 윗선 넘기면 음표에 줄표시
-                SPACE = Note.INTERVAL_LINE
-                if (note.rect.y < Note.Y_SHEET + SPACE) and not note.is_down:
-                    pygame.draw.line(screen, 'black', [note.rect.x - 2, Note.Y_SHEET + SPACE],
-                                     [note.rect.x + 22, Note.Y_SHEET + SPACE], 2)
+                SPACE = NOTE.INTERVAL_LINE
+                if (note.rect.y < NOTE.Y_SHEET + SPACE) and not note.is_down:
+                    pygame.draw.line(screen, 'black', [note.rect.x - 2, NOTE.Y_SHEET + SPACE],
+                                     [note.rect.x + 22, NOTE.Y_SHEET + SPACE], 2)
                 # 오선지 아랫선 넘기면 음표에 줄표시
-                BOTTOM_SHEET = Note.Y_SHEET + SPACE * 7
+                BOTTOM_SHEET = NOTE.Y_SHEET + SPACE * 7
                 NOTE_HEAD = note.rect.y + note.HEIGHT
                 A = 2 # 조정값
                 for i in range(4):
@@ -314,7 +315,7 @@ if __name__ == '__main__':
                 # 오선지 밖으로 넘으면 오선지 다시 그림
                 if note.X > WIDTH - note.WIDTH:
                     count_music_sheet.append(input_notes.index(note))
-                    Note.draw_music_sheet(screen, WIDTH)
+                    NOTE.draw_music_sheet(screen, WIDTH)
                     step = 0
                     note.set_X(10)
                     step = note.draw_note(step)
