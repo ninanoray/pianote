@@ -34,7 +34,7 @@ def draw_title_bar(screen, font_1, font_2):
     screen.blit(instruction2_text2, (WIDTH - intro_2, 30))
     instruction2_text3 = font_2.render('음표 휠업/휠다운 : 음표 길이 변경(?분음표)', True, 'black')
     screen.blit(instruction2_text3, (WIDTH - intro_2, 50))
-    
+
 # 텍스트(파일명)를 받는 GUI
 def input_text_gui(screen, font, text, input):
     img_text_1 = font.render(text, True, 'black') # 설명 문구
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
         read_score = open(f"../scores/{input_filename[:-1]}.csv", 'r')
         reader = csv.reader(read_score)
-        print('[START] 파일데이터\n')
+        print('[START] 파일데이터')
         for sheet_notes_data in reader:
             print(sheet_notes_data)
             file_pitch = ''
@@ -234,7 +234,7 @@ if __name__ == '__main__':
                                 # 음표를 지우다 이전 오선지로 돌아가면
                                 if len(music_sheets) > 1 and len(sheet.notes) < 2:
                                     music_sheets.remove(sheet)
-                                    sheet = music_sheets[-1]
+                                    sheet = music_sheets.__getitem__(-1)
                                     offset_note_input = len(sheet.notes) - 1
                                 break
                             # 휠업(4) : 음표 길어짐
@@ -324,20 +324,19 @@ if __name__ == '__main__':
                 # Enter 키 : 악보 재생
                 if event.key == 13:
                     print("[PIANOTE] 악보 재생 중..", end=' ')
-                    for sheet in music_sheets:
-                        sheet.draw_sheet(WIDTH)
-                        step = 0
-                        for note in sheet.notes:
+                    for play_sheet in music_sheets:
+                        play_sheet.draw_sheet(WIDTH)
+                        play_step = 0
+                        for note in play_sheet.notes:
                             # 음표 오선지에 그리기
-                            step = draw_step_note(note, step)
+                            play_step = draw_step_note(note, play_step)
                             pygame.display.flip()
-                            
-                            # 4/4박자에서 4분음표 1초에 1개
-                            time = int(1000 / (note.get_note() / 4))
+
                             note.get_sound().play(0, SOUND_PLAY_SEC)
+                            time = int(1000 / (note.get_note() / 4)) # 4/4박자에서 4분음표 1초에 1개
                             pygame.time.delay(time)
 
-                    print("재생 완료.")
+                    print("재생 완료")
 
                 # ESC 키 : 프로그램 종료
                 if event.key == pygame.K_ESCAPE:
