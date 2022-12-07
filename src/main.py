@@ -84,6 +84,7 @@ def input_text_gui(screen, font, text, input):
 
     return input
 
+# 음표 오선지에 그리기
 def draw_step_note(note, step):
     # B4이하 음표 8분음표 16분음표 간격 조정
     if (note.get_note() > 4) and note.is_down:
@@ -327,6 +328,7 @@ if __name__ == '__main__':
                         sheet.draw_sheet(WIDTH)
                         step = 0
                         for note in sheet.notes:
+                            # 음표 오선지에 그리기
                             step = draw_step_note(note, step)
                             pygame.display.flip()
                             
