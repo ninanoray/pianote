@@ -5,32 +5,67 @@ import piano_lists as pl
 WHITE_SOUNDS = []
 BLACK_SOUNDS = []
 
-# 오선지 요소(오선지 5줄)
-INTERVAL_LINE = 14 # 선 사이 간격
-Y_SHEET = 120 # 오선지 Y 좌표
-H_SHEET = INTERVAL_LINE * (4 + 2 + 5) # 내부 간격: 4칸, 외부 간격 위: 2칸, 외부 간격 아래: 5칸
-W_CLEF = 42 # 높은 음자리표 width
-W_METER = 22 # 박자표 width
+# # 오선지 요소(오선지 5줄)
+# INTERVAL_LINE = 14 # 선 사이 간격
+# Y_SHEET = 120 # 오선지 Y 좌표
+# H_SHEET = INTERVAL_LINE * (4 + 2 + 5) # 내부 간격: 4칸, 외부 간격 위: 2칸, 외부 간격 아래: 5칸
+# W_CLEF = 42 # 높은 음자리표 width
+# W_METER = 22 # 박자표 width
+#
+# # 오선지 그리기
+# def draw_music_sheet(screen, width_gui):
+#     IMG_TREBLE_CLEF = pygame.image.load("../images/treble_clef.png")
+#     IMG_TREBLE_CLEF = pygame.transform.scale(IMG_TREBLE_CLEF, (W_CLEF, INTERVAL_LINE * 6))
+#     IMG_FOUR_FOURTH = pygame.image.load("../images/four_fourth.png")
+#     IMG_FOUR_FOURTH = pygame.transform.scale(IMG_FOUR_FOURTH, (W_METER, INTERVAL_LINE * 4))
+#
+#     # 오선지 배경 그리기
+#     padding_bottom = 26
+#     pygame.draw.rect(screen, 'white', [0, Y_SHEET, width_gui, H_SHEET + padding_bottom])
+#     # 오선지 선 그리기
+#     for i in range(0, 5):
+#         pygame.draw.line(screen, 'black', [0, Y_SHEET + (i + 2) * INTERVAL_LINE], # 외부 간격 위: 2칸
+#                          [width_gui, Y_SHEET + (i + 2) * INTERVAL_LINE], 2)
+#
+#     screen.blit(IMG_TREBLE_CLEF, (0, Y_SHEET + INTERVAL_LINE))
+#     screen.blit(IMG_FOUR_FOURTH, (W_CLEF, Y_SHEET + INTERVAL_LINE * 2))
+class Sheet:
+    # 오선지 요소(오선지 5줄)
+    INTERVAL_LINE = 14  # 선 사이 간격
+    Y_SHEET = 120  # 오선지 Y 좌표
+    H_SHEET = INTERVAL_LINE * (4 + 2 + 5)  # 내부 간격: 4칸, 외부 간격 위: 2칸, 외부 간격 아래: 5칸
+    W_CLEF = 42  # 높은 음자리표 width
+    W_METER = 22  # 박자표 width
 
-# 오선지 그리기
-def draw_music_sheet(screen, width_gui):
     IMG_TREBLE_CLEF = pygame.image.load("../images/treble_clef.png")
     IMG_TREBLE_CLEF = pygame.transform.scale(IMG_TREBLE_CLEF, (W_CLEF, INTERVAL_LINE * 6))
     IMG_FOUR_FOURTH = pygame.image.load("../images/four_fourth.png")
     IMG_FOUR_FOURTH = pygame.transform.scale(IMG_FOUR_FOURTH, (W_METER, INTERVAL_LINE * 4))
 
-    # 오선지 배경 그리기
-    padding_bottom = 26
-    pygame.draw.rect(screen, 'white', [0, Y_SHEET, width_gui, H_SHEET + padding_bottom])
-    # 오선지 선 그리기
-    for i in range(0, 5):
-        pygame.draw.line(screen, 'black', [0, Y_SHEET + (i + 2) * INTERVAL_LINE], # 외부 간격 위: 2칸
-                         [width_gui, Y_SHEET + (i + 2) * INTERVAL_LINE], 2)
+    def __init__(self, screen, clef, time):
+        self.screen = screen
+        self.clef = clef
+        self.time = time
 
-    screen.blit(IMG_TREBLE_CLEF, (0, Y_SHEET + INTERVAL_LINE))
-    screen.blit(IMG_FOUR_FOURTH, (W_CLEF, Y_SHEET + INTERVAL_LINE * 2))
+        self.notes = []
 
-class Note: # 음표
+        self.padding_bottom = 26
+
+    def draw_sheet(self, width_gui):
+
+        pygame.draw.rect(self.screen, 'white', [0, self.Y_SHEET, width_gui, self.H_SHEET + self.padding_bottom])
+        # 오선지 선 그리기
+        for i in range(0, 5):
+            pygame.draw.line(self.screen, 'black', [0, self.Y_SHEET + (i + 2) * self.INTERVAL_LINE],  # 외부 간격 위: 2칸
+                             [width_gui, self.Y_SHEET + (i + 2) * self.INTERVAL_LINE], 2)
+
+        if self.clef == 'treble':
+            self.screen.blit(self.IMG_TREBLE_CLEF, (0, self.Y_SHEET + self.INTERVAL_LINE))
+        if self.time == '4/4':
+            self.screen.blit(self.IMG_FOUR_FOURTH, (self.W_CLEF, self.Y_SHEET + self.INTERVAL_LINE * 2))
+
+
+class Note(): # 음표
     WIDTH = 32 # 음표 이미지 넓이
     WIDTH2 = 46 # 꼬리올린 8분음표, 꼬리올린 16분음표 전용
     HEIGHT = 60 # 음표 이미지 높이
@@ -53,13 +88,13 @@ class Note: # 음표
     IMG_note_16up = pygame.image.load("../images/note_sixteenth_up.png")
     IMG_note_16up = pygame.transform.scale(IMG_note_16up, (WIDTH, HEIGHT))
     IMG_SHARP = pygame.image.load("../images/sharp.png")
-    IMG_SHARP = pygame.transform.scale(IMG_SHARP, (37, INTERVAL_LINE * 3))
+    IMG_SHARP = pygame.transform.scale(IMG_SHARP, (37, Sheet.INTERVAL_LINE * 3))
     IMG_FLAT = pygame.image.load("../images/flat.png")
-    IMG_FLAT = pygame.transform.scale(IMG_FLAT, (19, INTERVAL_LINE * 3))
+    IMG_FLAT = pygame.transform.scale(IMG_FLAT, (19, Sheet.INTERVAL_LINE * 3))
 
-    def __init__(self, screen, pitch, note = 4):
+    def __init__(self, screen, pitch, note):
         self.screen = screen
-
+        
         self.set_pitch(pitch) # 음(CDEFGAB)
         self.note = note # 2, 4, 8, 16분 음표
         self.set_image()
@@ -118,10 +153,10 @@ class Note: # 음표
 
     #음표 그리기
     def draw_note(self, step):
-        Y_C3 = Y_SHEET + INTERVAL_LINE*3 + 4  # 오선지 C4(도) 선 위치(음표 꼬리 올림)
-        Y_B4 = Y_SHEET + INTERVAL_LINE*2 + self.HEIGHT + 4  # 오선지 B4(시) 선 위치(음표 꼬리 내림)
-        START_MARGIN = W_CLEF + W_METER + 10 # 높은음자리표w + 박자표w + a
-
+        Y_C3 = Sheet.Y_SHEET + Sheet.INTERVAL_LINE*3 + 4  # 오선지 C4(도) 선 위치(음표 꼬리 올림)
+        Y_B4 = Sheet.Y_SHEET + Sheet.INTERVAL_LINE*2 + self.HEIGHT + 4  # 오선지 B4(시) 선 위치(음표 꼬리 내림)
+        START_MARGIN = Sheet.W_CLEF + Sheet.W_METER + 10 # 높은음자리표w + 박자표w + a
+        self.X = Sheet.W_CLEF + Sheet.W_METER + 10
         if step > 0:
             self.X = self.WIDTH + step
         else:
@@ -138,9 +173,9 @@ class Note: # 음표
 
         # 음표 꼬리 설정
         if self.is_down:
-            self.rect.y = Y_C3 - level * INTERVAL_LINE/2 # 오선지 interval
+            self.rect.y = Y_C3 - level * Sheet.INTERVAL_LINE/2 # 오선지 interval
         else:
-            self.rect.y = Y_B4 - level * INTERVAL_LINE/2
+            self.rect.y = Y_B4 - level * Sheet.INTERVAL_LINE/2
 
         # 반음에 '#' 붙임
         if '#' in self.pitch:
@@ -150,7 +185,7 @@ class Note: # 음표
             if self.is_down:
                 rect.y = self.rect.y + self.HEIGHT/2 + 2
             else:
-                rect.y = self.rect.y - INTERVAL_LINE
+                rect.y = self.rect.y - Sheet.INTERVAL_LINE
             self.screen.blit(self.IMG_SHARP, rect)
 
         self.rect.x = self.X
