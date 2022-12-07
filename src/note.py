@@ -14,9 +14,9 @@ W_METER = 22 # 박자표 width
 
 # 오선지 그리기
 def draw_music_sheet(screen, width_gui):
-    IMG_TREBLE_CLEF = pygame.image.load("images/treble_clef.png")
+    IMG_TREBLE_CLEF = pygame.image.load("../images/treble_clef.png")
     IMG_TREBLE_CLEF = pygame.transform.scale(IMG_TREBLE_CLEF, (W_CLEF, INTERVAL_LINE * 6))
-    IMG_FOUR_FOURTH = pygame.image.load("images/four_fourth.png")
+    IMG_FOUR_FOURTH = pygame.image.load("../images/four_fourth.png")
     IMG_FOUR_FOURTH = pygame.transform.scale(IMG_FOUR_FOURTH, (W_METER, INTERVAL_LINE * 4))
 
     # 오선지 배경 그리기
@@ -35,25 +35,25 @@ class Note: # 음표
     HEIGHT = 60 # 음표 이미지 높이
 
     # 음표 이미지
-    IMG_note_2 = pygame.image.load("images/note_half.png")
+    IMG_note_2 = pygame.image.load("../images/note_half.png")
     IMG_note_2 = pygame.transform.scale(IMG_note_2, (WIDTH, HEIGHT))
-    IMG_note_2up = pygame.image.load("images/note_half_up.png")
+    IMG_note_2up = pygame.image.load("../images/note_half_up.png")
     IMG_note_2up = pygame.transform.scale(IMG_note_2up, (WIDTH, HEIGHT))
-    IMG_note_4 = pygame.image.load("images/note_quarter.png")
+    IMG_note_4 = pygame.image.load("../images/note_quarter.png")
     IMG_note_4 = pygame.transform.scale(IMG_note_4, (WIDTH, HEIGHT))
-    IMG_note_4up = pygame.image.load("images/note_quarter_up.png")
+    IMG_note_4up = pygame.image.load("../images/note_quarter_up.png")
     IMG_note_4up = pygame.transform.scale(IMG_note_4up, (WIDTH, HEIGHT))
-    IMG_note_8 = pygame.image.load("images/note_eighth.png")
+    IMG_note_8 = pygame.image.load("../images/note_eighth.png")
     IMG_note_8 = pygame.transform.scale(IMG_note_8, (WIDTH2, HEIGHT))
-    IMG_note_8up = pygame.image.load("images/note_eighth_up.png")
+    IMG_note_8up = pygame.image.load("../images/note_eighth_up.png")
     IMG_note_8up = pygame.transform.scale(IMG_note_8up, (WIDTH, HEIGHT))
-    IMG_note_16 = pygame.image.load("images/note_sixteenth.png")
+    IMG_note_16 = pygame.image.load("../images/note_sixteenth.png")
     IMG_note_16 = pygame.transform.scale(IMG_note_16, (WIDTH2, HEIGHT))
-    IMG_note_16up = pygame.image.load("images/note_sixteenth_up.png")
+    IMG_note_16up = pygame.image.load("../images/note_sixteenth_up.png")
     IMG_note_16up = pygame.transform.scale(IMG_note_16up, (WIDTH, HEIGHT))
-    IMG_SHARP = pygame.image.load("images/sharp.png")
+    IMG_SHARP = pygame.image.load("../images/sharp.png")
     IMG_SHARP = pygame.transform.scale(IMG_SHARP, (37, INTERVAL_LINE * 3))
-    IMG_FLAT = pygame.image.load("images/flat.png")
+    IMG_FLAT = pygame.image.load("../images/flat.png")
     IMG_FLAT = pygame.transform.scale(IMG_FLAT, (19, INTERVAL_LINE * 3))
 
     def __init__(self, screen, pitch, note = 4):
