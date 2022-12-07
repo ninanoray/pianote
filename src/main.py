@@ -84,6 +84,29 @@ def input_text_gui(screen, font, text, input):
 
     return input
 
+# 음표 오선지에 그리기
+def draw_step_note(note, step):
+    # B4이하 음표 8분음표 16분음표 간격 조정
+    if (note.get_note() > 4) and note.is_down:
+        step = note.draw_note(step) + (note.WIDTH2 - note.WIDTH)
+    else:
+        step = note.draw_note(step)
+    # 오선지 윗선 넘기면 음표에 줄표시
+    SPACE = nt.Sheet.INTERVAL_LINE
+    if (note.rect.y < nt.Sheet.Y_SHEET + SPACE) and not note.is_down:
+        pygame.draw.line(screen, 'black', [note.rect.x - 2, nt.Sheet.Y_SHEET + SPACE],
+                         [note.rect.x + 22, nt.Sheet.Y_SHEET + SPACE], 2)
+    # 오선지 아랫선 넘기면 음표에 줄표시
+    BOTTOM_SHEET = nt.Sheet.Y_SHEET + SPACE * 7
+    NOTE_HEAD = note.rect.y + note.HEIGHT
+    A = 2  # 조정값
+    for i in range(4):
+        if (BOTTOM_SHEET + SPACE * i + A < NOTE_HEAD) and note.is_down:
+            pygame.draw.line(screen, 'black', [note.rect.x - 4, BOTTOM_SHEET + SPACE * i],
+                             [note.rect.x + 22, BOTTOM_SHEET + SPACE * i], 2)
+
+    return step
+
 #-----main-------------------------------------------------------------------------------------------------------------#
 if __name__ == '__main__':
     WHITE_SOUNDS = []
@@ -115,8 +138,8 @@ if __name__ == '__main__':
     medium_font = pygame.font.SysFont('arial', 28)
     small_font = pygame.font.SysFont('arial', 16)
     real_small_font = pygame.font.SysFont('arial', 10)
-    font_kor = pygame.font.SysFont('malgungothic', 16)
     medium_font_kor = pygame.font.SysFont('malgungothic', 24)
+    small_font_kor = pygame.font.SysFont('malgungothic', 16)
 
     # 소리 파일
     for white_pitch in white_pitches:
@@ -132,20 +155,38 @@ if __name__ == '__main__':
     gui_piano = gui.PianoGUI(screen, WIDTH, HEIGHT, small_font, real_small_font)
 
     input_notes = [] # 프로그램에서 사용자가 입력할 악보 정보
-    count_music_sheet = [0] # 해당 리스트의 마지막 값 == 클릭 가능한 음표의 시작 인덱스
     offset_note_input = 0 # 음표 입력 커서 오프셋
+    music_sheets = [] # 오선지
 
     #----- 1 파일명 입력 받아 파일 불러오기-------------------------------------------------------------------------------#
     input_filename = ''  # 파일명
-    instruction = "[시작] 악보 파일명 입력 후 Enter (처음부터 시작 : 바로 Enter)"
+    instruction = "[START] 악보 파일명 입력 후 Enter (새로 시작 : 바로 Enter)"
     input_filename = input_text_gui(screen, medium_font_kor, instruction, input_filename)
 
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
         read_score = open(f"../scores/{input_filename[:-1]}.csv", 'r')
         reader = csv.reader(read_score)
-        input_notes = [nt.Note(screen, note_info[0], int(note_info[1])) for note_info in reader]
+        print('[START] 파일데이터\n')
+        for sheet_notes_data in reader:
+            print(sheet_notes_data)
+            file_pitch = ''
+            if len(music_sheets) > 0:
+                file_sheet = nt.Sheet(screen, 'treble', '')
+                music_sheets.append(file_sheet)
+            else: # 처음에만 박자표를 그림
+                first_sheet = nt.Sheet(screen, 'treble', '4/4')
+                music_sheets.append(first_sheet)
+            for i, data in enumerate(sheet_notes_data):
+                if i%2 == 0:
+                    file_pitch = data
+                else:
+                    file_note = nt.Note(screen, file_pitch, int(data))
+                    music_sheets[-1].notes.append(file_note)
+        offset_note_input = len(music_sheets[-1].notes)
         print(f'[START] Pianote 시작. 불러온 악보 파일명 : {input_filename[:-1]}.csv\n')
     else:
+        first_sheet = nt.Sheet(screen, 'treble', '4/4')
+        music_sheets.append(first_sheet)
         print('[START] Pianote 처음 시작.\n')
 
     #----- 2. 피아노 GUI------------------------------------------------------------------------------------------------#
@@ -156,9 +197,10 @@ if __name__ == '__main__':
         white_keys, black_keys = gui_piano.draw_piano()
         gui_piano.draw_hands()
         # 제목/설명 출력
-        draw_title_bar(screen, font, font_kor)
-        # 오선지 그리기
-        nt.draw_music_sheet(screen, WIDTH)
+        draw_title_bar(screen, font, small_font_kor)
+        # 마지막 오선지 그리기
+        sheet = music_sheets[-1]
+        sheet.draw_sheet(WIDTH)
 
         for event in pygame.event.get():
             input_pitch = ""  # 입력한 음
@@ -177,21 +219,26 @@ if __name__ == '__main__':
                         WHITE_SOUNDS[i].play(0, SOUND_PLAY_SEC)
                         gui.active_whites.append([i, 30])
                 # 음표 클릭
-                if input_notes:
-                    for i in range(count_music_sheet[-1], len(input_notes)):
-                        if input_notes[i].rect.collidepoint(event.pos):
+                if sheet.notes:
+                    for i, note in enumerate(sheet.notes):
+                        if note.rect.collidepoint(event.pos):
                             # 좌클릭 : 클릭한 음표로 입력커서 이동
                             if event.button == 1:
                                 offset_note_input = i + 1
-                                print(f'[PIANOTE] 음표 입력커서 이동. offset: {offset_note_input}')
+                                print(f'[PIANOTE] 음표 입력커서 이동. offset: {music_sheets.index(sheet)}-{offset_note_input}')
                                 break
                             # 우클릭 : 클릭한 음표 삭제
                             if event.button == 3:
-                                print(f'[PIANOTE] 음표 삭제: {input_notes[i].get_pitch()}({input_notes[i].get_note()}th)')
-                                input_notes.pop(i)
+                                print(f'[PIANOTE] 음표 삭제: {note.get_pitch()}({note.get_note()}th)')
+                                sheet.notes.remove(note)
+                                # 음표를 지우다 이전 오선지로 돌아가면
+                                if len(music_sheets) > 1 and len(sheet.notes) < 2:
+                                    music_sheets.remove(sheet)
+                                    sheet = music_sheets[-1]
+                                    offset_note_input = len(sheet.notes) - 1
                                 break
                             # 휠업(4) : 음표 길어짐
-                            tmp = input_notes.pop(i)
+                            tmp = sheet.notes.pop(i)
                             th = tmp.get_note()
                             if event.button == 5:
                                 print(f'[PIANOTE] 음표({tmp.get_pitch()}) note 변경: {th}분음표 →', end=' ')
@@ -207,7 +254,7 @@ if __name__ == '__main__':
                             tmp.set_note(th)
                             tmp.set_image()
                             tmp.draw_note(tmp.X)
-                            input_notes.insert(i, tmp)
+                            sheet.notes.insert(i, tmp)
 
 
             # 키보드 값 입력
@@ -236,12 +283,11 @@ if __name__ == '__main__':
                         index = white_pitches.index(gui_piano.right_dict[event.text.upper()])
                         WHITE_SOUNDS[index].play(0, SOUND_PLAY_SEC)
                         gui.active_whites.append([index, 30])
-                # 입력한 음 저장
+                # 입력한 음 저장, Note 객체 생성!!
                 if (input_pitch != ""):
                     print(f'[PIANOTE] 음표 입력: {input_pitch}')
-                    #================== Note 객체 생성 ===================#
-                    new_note = nt.Note(screen, input_pitch)
-                    input_notes.insert(offset_note_input, new_note)
+                    new_note = nt.Note(screen, input_pitch, 4) # default : 4분음표
+                    sheet.notes.insert(offset_note_input, new_note) # 오선지에 음표 추가
                     offset_note_input += 1
 
 
@@ -267,19 +313,31 @@ if __name__ == '__main__':
                 gui_piano.update_keys_set()
                 # delete 키 : 마지막 음표 삭제
                 if event.key == pygame.K_DELETE:
-                    if input_notes:
-                        removed_note = input_notes.pop()
+                    if sheet.notes:
+                        removed_note = sheet.notes.pop()
                         print(f'[PIANOTE] 음표 삭제: {removed_note.get_pitch()}({removed_note.get_note()}th)')
+                        # 음표를 지우다 이전 오선지로 돌아가면
+                        if len(music_sheets) > 1 and len(sheet.notes) < 2:
+                            music_sheets.remove(sheet)
+                            sheet = music_sheets[-1]
+                            offset_note_input = len(sheet.notes) - 1
                 # Enter 키 : 악보 재생
                 if event.key == 13:
                     print("[PIANOTE] 악보 재생 중..", end=' ')
-                    if input_notes:
-                        for note in input_notes:
+                    for sheet in music_sheets:
+                        sheet.draw_sheet(WIDTH)
+                        step = 0
+                        for note in sheet.notes:
+                            # 음표 오선지에 그리기
+                            step = draw_step_note(note, step)
+                            pygame.display.flip()
+                            
                             # 4/4박자에서 4분음표 1초에 1개
-                            time = int(1000 / (note.get_note()/4))
+                            time = int(1000 / (note.get_note() / 4))
                             note.get_sound().play(0, SOUND_PLAY_SEC)
                             pygame.time.delay(time)
-                        print("재생 완료.")
+
+                    print("재생 완료.")
 
                 # ESC 키 : 프로그램 종료
                 if event.key == pygame.K_ESCAPE:
@@ -287,55 +345,45 @@ if __name__ == '__main__':
                     run = False
 
 
-        # 음표를 옆으로 그려나가면서 오선지에 그려지는 것들
-        if input_notes:
+        # 악보 그리기
+        if sheet.notes:
             step = 0
-            for note in input_notes:
-                # B4이하 음표 8분음표 16분음표 간격 조정
-                if note.get_note() > 4 and note.is_down:
-                    step = note.draw_note(step) + (note.WIDTH2-note.WIDTH)
-                else:
-                    step = note.draw_note(step)
-
-                # 오선지 윗선 넘기면 음표에 줄표시
-                SPACE = nt.INTERVAL_LINE
-                if (note.rect.y < nt.Y_SHEET + SPACE) and not note.is_down:
-                    pygame.draw.line(screen, 'black', [note.rect.x - 2, nt.Y_SHEET + SPACE],
-                                     [note.rect.x + 22, nt.Y_SHEET + SPACE], 2)
-                # 오선지 아랫선 넘기면 음표에 줄표시
-                BOTTOM_SHEET = nt.Y_SHEET + SPACE * 7
-                NOTE_HEAD = note.rect.y + note.HEIGHT
-                A = 2 # 조정값
-                for i in range(4):
-                    if (BOTTOM_SHEET + SPACE * i + A < NOTE_HEAD) and note.is_down:
-                        pygame.draw.line(screen, 'black', [note.rect.x - 4, BOTTOM_SHEET + SPACE * i],
-                                         [note.rect.x + 22, BOTTOM_SHEET + SPACE * i], 2)
+            for note in sheet.notes:
+                step = draw_step_note(note, step)
 
                 # 오선지 밖으로 넘으면 오선지 다시 그림
                 if note.X > WIDTH - note.WIDTH:
-                    count_music_sheet.append(input_notes.index(note))
-                    nt.draw_music_sheet(screen, WIDTH)
+                    sheet.notes.remove(note) # 이전 오선지에 넘어간 노트를 제거하고
+                    new_sheet = nt.Sheet(screen, 'treble', None)
+                    new_sheet.notes.append(note) # 새로운 오선지에 넘어간 노트를 넘겨줌
+                    music_sheets.append(new_sheet)
+
+                    offset_note_input = 1
+
                     step = 0
                     note.set_X(10)
                     step = note.draw_note(step)
-                # 음표를 지우다 이전 오선지로 돌아가면
-                elif note.X > WIDTH - note.WIDTH * 2:
-                    if count_music_sheet[-1] != 0: # 기본값(0)은 남김
-                        count_music_sheet.pop()
 
         pygame.display.flip()
 
-    # pygame.quit() # GUI 종료
-
     # 저장된 노트 정보
-    saved_notes = [(note.get_pitch(), note.get_note()) for note in input_notes]
+    saved_notes = []
+    for sheet in music_sheets:
+        notes_list = sheet.notes
+        all_notes = []
+        for note in notes_list:
+            all_notes.extend([note.get_pitch(), note.get_note()])
+        saved_notes.append(all_notes)
+
     print('\n-------------------------------')
-    print(f'입력한 음표 정보\n{saved_notes}')
+    print('입력한 음표 정보')
+    for i in range(len(saved_notes)):
+        print(f'sheet{i} {saved_notes[i]}')
     print('-------------------------------\n')
 
 #----- 3. 종료 후 악보 저장하기------------------------------------------------------------------------------------------#
-    save_filename = ''  # 파일명
-    explain_txt = "[종료] 저장할 악보 파일명 입력후 Enter (저장없이 종료 : 바로 Enter)"
+    save_filename = input_filename[:-1]  # 파일명
+    explain_txt = "[END] 저장할 악보 파일명 입력후 Enter (저장없이 종료 : 빈칸으로 Enter)"
     save_filename = input_text_gui(screen, medium_font_kor, explain_txt, save_filename)
 
     if save_filename[:-1]:  # 아무것도 입력하지 않고 Enter 누르면 "\r"

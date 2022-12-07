@@ -100,8 +100,8 @@ class PianoGUI:
                 active_whites[i][1] -= 1
 
         # 흑건
-        LINE_CDE = 2 # 도레미 흑건
-        LINE_FGAB = 3 # 파솔라시 흑건
+        LINE_CDE = 2 # 도레미 흑건 수
+        LINE_FGAB = 3 # 파솔라시 흑건 수
         skip_count = 0
         last_skip = LINE_FGAB
         skip_track = 0
