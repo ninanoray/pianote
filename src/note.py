@@ -51,6 +51,7 @@ class Sheet:
 
         self.padding_bottom = 26
 
+    # 오선지 그리기
     def draw_sheet(self, width_gui):
 
         pygame.draw.rect(self.screen, 'white', [0, self.Y_SHEET, width_gui, self.H_SHEET + self.padding_bottom])
@@ -63,6 +64,29 @@ class Sheet:
             self.screen.blit(self.IMG_TREBLE_CLEF, (0, self.Y_SHEET + self.INTERVAL_LINE))
         if self.time == '4/4':
             self.screen.blit(self.IMG_FOUR_FOURTH, (self.W_CLEF, self.Y_SHEET + self.INTERVAL_LINE * 2))
+
+    # 오선지에 음표 그리기
+    def draw_step_note(self, note, step):
+        # B4이하 음표 8분음표 16분음표 간격 조정
+        if (note.get_note() > 4) and note.is_down:
+            step = note.draw_note(step) + (note.WIDTH2 - note.WIDTH)
+        else:
+            step = note.draw_note(step)
+        # 오선지 윗선 넘기면 음표에 줄표시
+        SPACE = self.INTERVAL_LINE
+        if (note.rect.y < self.Y_SHEET + SPACE) and not note.is_down:
+            pygame.draw.line(self.screen, 'black', [note.rect.x - 2, self.Y_SHEET + SPACE],
+                             [note.rect.x + 22, self.Y_SHEET + SPACE], 2)
+        # 오선지 아랫선 넘기면 음표에 줄표시
+        BOTTOM_SHEET = self.Y_SHEET + SPACE * 7
+        NOTE_HEAD = note.rect.y + note.HEIGHT
+        A = 2  # 조정값
+        for i in range(4):
+            if (BOTTOM_SHEET + SPACE * i + A < NOTE_HEAD) and note.is_down:
+                pygame.draw.line(self.screen, 'black', [note.rect.x - 4, BOTTOM_SHEET + SPACE * i],
+                                 [note.rect.x + 22, BOTTOM_SHEET + SPACE * i], 2)
+
+        return step
 
 
 class Note(): # 음표

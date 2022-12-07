@@ -21,9 +21,9 @@ def draw_title_bar(screen, font_1, font_2):
     screen.blit(instruction_text, (WIDTH - intro_1, 10))
     instruction_text2 = font_2.render('[←→] 키 : 오른손 옥타브 변경', True, 'black')
     screen.blit(instruction_text2, (WIDTH - intro_1, 30))
-    instruction_text3 = font_2.render('Delete 키 : 마지막 음표 삭제', True, 'black')
+    instruction_text3 = font_2.render('BackSpace 키 : 마지막 음표 삭제', True, 'black')
     screen.blit(instruction_text3, (WIDTH - intro_1, 50))
-    instruction_text4 = font_2.render('Enter 키 : 악보 재생', True, 'blue')
+    instruction_text4 = font_2.render('Space 바 : 악보 재생', True, 'blue')
     screen.blit(instruction_text4, (WIDTH - intro_1, 70))
     instruction_text5 = font_2.render('Esc 키 : Pianote 종료. 악보 저장.', True, 'red')
     screen.blit(instruction_text5, (WIDTH - intro_1, 90))
@@ -312,7 +312,7 @@ if __name__ == '__main__':
                         print(f"[PIANOTE] 왼손 옥타브 : {gui_piano.get_left_oct()}")
                 gui_piano.update_keys_set()
                 # delete 키 : 마지막 음표 삭제
-                if event.key == pygame.K_DELETE:
+                if event.key == pygame.K_BACKSPACE:
                     if sheet.notes:
                         removed_note = sheet.notes.pop()
                         print(f'[PIANOTE] 음표 삭제: {removed_note.get_pitch()}({removed_note.get_note()}th)')
@@ -321,8 +321,8 @@ if __name__ == '__main__':
                             music_sheets.remove(sheet)
                             sheet = music_sheets[-1]
                             offset_note_input = len(sheet.notes) - 1
-                # Enter 키 : 악보 재생
-                if event.key == 13:
+                # Space 바 : 악보 재생
+                if event.key == pygame.K_SPACE:
                     print("[PIANOTE] 악보 재생 중..", end=' ')
                     for play_sheet in music_sheets:
                         play_sheet.draw_sheet(WIDTH)
@@ -348,7 +348,7 @@ if __name__ == '__main__':
         if sheet.notes:
             step = 0
             for note in sheet.notes:
-                step = draw_step_note(note, step)
+                step = sheet.draw_step_note(note, step)
 
                 # 오선지 밖으로 넘으면 오선지 다시 그림
                 if note.X > WIDTH - note.WIDTH:
