@@ -34,7 +34,7 @@ def draw_title_bar(screen, font_1, font_2):
     screen.blit(instruction2_text2, (WIDTH - intro_2, 30))
     instruction2_text3 = font_2.render('음표 휠업/휠다운 : 음표 길이 변경(?분음표)', True, 'black')
     screen.blit(instruction2_text3, (WIDTH - intro_2, 50))
-    
+
 # 텍스트(파일명)를 받는 GUI
 def input_text_gui(screen, font, text, input):
     img_text_1 = font.render(text, True, 'black') # 설명 문구
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
         read_score = open(f"../scores/{input_filename[:-1]}.csv", 'r')
         reader = csv.reader(read_score)
-        print('[START] 파일데이터\n')
+        print('[START] 파일데이터')
         for sheet_notes_data in reader:
             print(sheet_notes_data)
             file_pitch = ''
