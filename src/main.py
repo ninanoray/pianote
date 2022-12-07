@@ -234,7 +234,7 @@ if __name__ == '__main__':
                                 # 음표를 지우다 이전 오선지로 돌아가면
                                 if len(music_sheets) > 1 and len(sheet.notes) < 2:
                                     music_sheets.remove(sheet)
-                                    sheet = music_sheets[-1]
+                                    sheet = music_sheets.__getitem__(-1)
                                     offset_note_input = len(sheet.notes) - 1
                                 break
                             # 휠업(4) : 음표 길어짐
