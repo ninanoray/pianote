@@ -115,8 +115,8 @@ if __name__ == '__main__':
     medium_font = pygame.font.SysFont('arial', 28)
     small_font = pygame.font.SysFont('arial', 16)
     real_small_font = pygame.font.SysFont('arial', 10)
-    font_kor = pygame.font.SysFont('malgungothic', 16)
     medium_font_kor = pygame.font.SysFont('malgungothic', 24)
+    small_font_kor = pygame.font.SysFont('malgungothic', 16)
 
     # 소리 파일
     for white_pitch in white_pitches:
@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
     #----- 1 파일명 입력 받아 파일 불러오기-------------------------------------------------------------------------------#
     input_filename = ''  # 파일명
-    instruction = "[시작] 악보 파일명 입력 후 Enter (처음부터 시작 : 바로 Enter)"
+    instruction = "[START] 악보 파일명 입력 후 Enter (새로 시작 : 바로 Enter)"
     input_filename = input_text_gui(screen, medium_font_kor, instruction, input_filename)
 
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
@@ -156,7 +156,7 @@ if __name__ == '__main__':
         white_keys, black_keys = gui_piano.draw_piano()
         gui_piano.draw_hands()
         # 제목/설명 출력
-        draw_title_bar(screen, font, font_kor)
+        draw_title_bar(screen, font, small_font_kor)
         # 오선지 그리기
         nt.draw_music_sheet(screen, WIDTH)
 
@@ -335,7 +335,7 @@ if __name__ == '__main__':
 
 #----- 3. 종료 후 악보 저장하기------------------------------------------------------------------------------------------#
     save_filename = ''  # 파일명
-    explain_txt = "[종료] 저장할 악보 파일명 입력후 Enter (저장없이 종료 : 바로 Enter)"
+    explain_txt = "[END] 저장할 악보 파일명 입력후 Enter (저장없이 종료 : 바로 Enter)"
     save_filename = input_text_gui(screen, medium_font_kor, explain_txt, save_filename)
 
     if save_filename[:-1]:  # 아무것도 입력하지 않고 Enter 누르면 "\r"

@@ -20,7 +20,8 @@ def draw_music_sheet(screen, width_gui):
     IMG_FOUR_FOURTH = pygame.transform.scale(IMG_FOUR_FOURTH, (W_METER, INTERVAL_LINE * 4))
 
     # 오선지 배경 그리기
-    pygame.draw.rect(screen, 'white', [0, Y_SHEET, width_gui, H_SHEET + INTERVAL_LINE]) # INTERVAL_LINE 그냥 추가 여백
+    padding_bottom = 26
+    pygame.draw.rect(screen, 'white', [0, Y_SHEET, width_gui, H_SHEET + padding_bottom])
     # 오선지 선 그리기
     for i in range(0, 5):
         pygame.draw.line(screen, 'black', [0, Y_SHEET + (i + 2) * INTERVAL_LINE], # 외부 간격 위: 2칸

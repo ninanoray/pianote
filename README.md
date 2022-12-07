@@ -22,7 +22,7 @@
   + Enter 키를 누르면 Pianote GUI로 진입
 + **프로그램 종료**
   + Pianote GUI에서 Esc 키를 누르면 종료되고 해당 과정으로 넘어옴 
-  + 입력한 노트 정보들을 악보파일로 저장할 수 있음
+  + 입력한 노트 정보들을 악보파일(.csv)로 scores 디렉토리에 저장할 수 있음
   + 저장 과정 없이 종료 : Enter 키를 바로 누른다  
   <br/>
 
@@ -48,7 +48,7 @@
 
 ## 참고자료
 
-### 피아노 GUI 디자인 및 기능 설정 참고
+### 피아노 GUI 디자인 및 건반 기능 설정 참고
 + plemaster01의 PythonPiano : [Git link](https://github.com/plemaster01/PythonPiano/blob/main/main.py)  
 <br/>
 
