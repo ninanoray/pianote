@@ -324,20 +324,19 @@ if __name__ == '__main__':
                 # Enter 키 : 악보 재생
                 if event.key == 13:
                     print("[PIANOTE] 악보 재생 중..", end=' ')
-                    for sheet in music_sheets:
-                        sheet.draw_sheet(WIDTH)
-                        step = 0
-                        for note in sheet.notes:
+                    for play_sheet in music_sheets:
+                        play_sheet.draw_sheet(WIDTH)
+                        play_step = 0
+                        for note in play_sheet.notes:
                             # 음표 오선지에 그리기
-                            step = draw_step_note(note, step)
+                            play_step = draw_step_note(note, play_step)
                             pygame.display.flip()
-                            
-                            # 4/4박자에서 4분음표 1초에 1개
-                            time = int(1000 / (note.get_note() / 4))
+
                             note.get_sound().play(0, SOUND_PLAY_SEC)
+                            time = int(1000 / (note.get_note() / 4)) # 4/4박자에서 4분음표 1초에 1개
                             pygame.time.delay(time)
 
-                    print("재생 완료.")
+                    print("재생 완료")
 
                 # ESC 키 : 프로그램 종료
                 if event.key == pygame.K_ESCAPE:
