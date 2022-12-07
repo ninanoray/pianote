@@ -120,9 +120,9 @@ if __name__ == '__main__':
 
     # 소리 파일
     for white_pitch in white_pitches:
-        WHITE_SOUNDS.append(mixer.Sound(f'sound\piano_main\\{white_pitch}.wav'))
+        WHITE_SOUNDS.append(mixer.Sound(f'../sound\piano_main\\{white_pitch}.wav'))
     for black_pitch in black_pitches:
-        BLACK_SOUNDS.append(mixer.Sound(f'sound\piano_main\\{black_pitch}.wav'))
+        BLACK_SOUNDS.append(mixer.Sound(f'../sound\piano_main\\{black_pitch}.wav'))
     SOUND_PLAY_SEC = 2000 # 사운드 재생 시간
     print(BLACK_SOUNDS[0].get_length())
 
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     input_filename = input_text_gui(screen, medium_font_kor, instruction, input_filename)
 
     if input_filename[:-1]: # 아무것도 입력하지 않고 Enter 누르면 "\r"
-        read_score = open(f"scores/{input_filename[:-1]}.csv", 'r')
+        read_score = open(f"../scores/{input_filename[:-1]}.csv", 'r')
         reader = csv.reader(read_score)
         input_notes = [NOTE.Note(screen, note_info[0], int(note_info[1])) for note_info in reader]
         print(f'[START] Pianote 시작. 불러온 악보 파일명 : {input_filename[:-1]}.csv\n')
@@ -340,7 +340,7 @@ if __name__ == '__main__':
     save_filename = input_text_gui(screen, medium_font_kor, explain_txt, save_filename)
 
     if save_filename[:-1]:  # 아무것도 입력하지 않고 Enter 누르면 "\r"
-        create_score = open(f'scores/{save_filename[:-1]}.csv', 'w', newline='')
+        create_score = open(f'../scores/{save_filename[:-1]}.csv', 'w', newline='')
         writer = csv.writer(create_score)
         writer.writerows(saved_notes)
         print(f"[END] Pianote 종료. 저장한 악보 파일명 : {save_filename[:-1]}.csv")
