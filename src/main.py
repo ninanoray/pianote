@@ -286,7 +286,7 @@ if __name__ == '__main__':
                 # 입력한 음 저장, Note 객체 생성!!
                 if (input_pitch != ""):
                     print(f'[PIANOTE] 음표 입력: {input_pitch}')
-                    new_note = nt.Note(screen, input_pitch, 4) # default : 4분음표
+                    new_note = nt.Note(screen, input_pitch, 8) # default : 4분음표
                     sheet.notes.insert(offset_note_input, new_note) # 오선지에 음표 추가
                     offset_note_input += 1
 
