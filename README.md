@@ -24,11 +24,15 @@
   + scores 디렉토리 내부 csv 악보파일을 불러올 수 있음
   + 불러온 악보 파일에 이어서 작업 가능
   + 불러오는 과정 없이 시작 : Enter 키를 바로 누른다
-  + Enter 키를 누르면 Pianote GUI로 진입
+  + Enter 키를 누르면 Pianote GUI로 진입  
+  ![start_2](https://user-images.githubusercontent.com/77103814/206885108-816fc00f-cd57-4183-bb7d-064344dfd41f.png)  
+
 + **프로그램 종료**
   + Pianote GUI에서 Esc 키를 누르면 종료되고 해당 과정으로 넘어옴 
   + 입력한 노트 정보들을 악보파일(.csv)로 scores 디렉토리에 저장할 수 있음
   + 저장 과정 없이 종료 : Enter 키를 바로 누른다  
+  ![end_2](https://user-images.githubusercontent.com/77103814/206885116-6d685677-657d-4659-a4b3-c6f00f5d9b3c.png)  
+
   <br/>
 
 ### 피아노 조작
