@@ -1,15 +1,13 @@
 # Pianote
+### 피아노 GUI로 간단하게 작곡하는 프로그램  
++ **Pianote** = piano + note
++ **Note** : 음표 (2분음표, 4분음표, 8분음표, 16분음표)  
++ **Pitch** : 음 (C D E F G A B, 도레미파솔라시)
 
 ## INFO
 + 사용언어 : Python 3.7  
 + 개발환경 : PyCharm Community  
 + 라이선스 : [MIT License](https://opensource.org/licenses/MIT)
-
-## 소개
-### 피아노 GUI로 간단하게 작곡하는 프로그램  
-+ **Pianote** = piano + note
-+ **Note** : 음표 (2분음표, 4분음표, 8분음표, 16분음표)  
-+ **Pitch** : 음 (C D E F G A B, 도레미파솔라시)
 
 ## 사용 라이브러리
 ### Pygame 2.1.2
