@@ -13,7 +13,7 @@
 + **Pygame 2.1.2**([LGPL License](https://www.pygame.org/docs/LGPL.txt))
 
 ### 시연영상
-시작 파일명으로 cen 입력
+ 파일명 : cen
 
 https://user-images.githubusercontent.com/77103814/206886503-9f345df2-2971-4410-9201-f38a2a4a7fdd.mp4  
 
