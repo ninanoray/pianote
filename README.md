@@ -4,13 +4,13 @@
 + **Note** : 음표 (2분음표, 4분음표, 8분음표, 16분음표)  
 + **Pitch** : 음 (C D E F G A B, 도레미파솔라시)
 
-## INFO
+### INFO
 + 사용언어 : Python 3.7  
 + 개발환경 : PyCharm Community  
 + 라이선스 : [MIT License](https://opensource.org/licenses/MIT)
 
-## 사용 라이브러리
-### Pygame 2.1.2
+### 사용 라이브러리
+*** Pygame 2.1.2 ***
 + 라이선스 : [LGPL License](https://www.pygame.org/docs/LGPL.txt)
 
 <br/>
