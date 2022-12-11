@@ -10,7 +10,7 @@
 + 라이선스 : [MIT License](https://opensource.org/licenses/MIT)
 
 ### 사용 라이브러리
-+ **Pygame 2.1.2**(라이선스 : [LGPL License](https://www.pygame.org/docs/LGPL.txt))
++ **Pygame 2.1.2**([LGPL License](https://www.pygame.org/docs/LGPL.txt))
 
 <br/>
 
