@@ -79,6 +79,5 @@
 + Comments : stereo, non-anechoic recording
 <br/>
 위 무료 음원을 .wav로 변환하고  
-trim하여 음 시작점을 맞추는 작업을 하고  
-포맷에 맞게 파일명을 수정해서 사용.  
+trim하여 음 시작점을 맞추는 작업 후 사용.  
 <br/>
