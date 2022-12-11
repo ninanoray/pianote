@@ -311,7 +311,7 @@ if __name__ == '__main__':
                         gui_piano.set_left_oct(gui_piano.get_left_oct() - 1)
                         print(f"[PIANOTE] 왼손 옥타브 : {gui_piano.get_left_oct()}")
                 gui_piano.update_keys_set()
-                # delete 키 : 마지막 음표 삭제
+                # 백 스페이스 키 : 마지막 음표 삭제
                 if event.key == pygame.K_BACKSPACE:
                     if sheet.notes:
                         removed_note = sheet.notes.pop()
@@ -335,9 +335,7 @@ if __name__ == '__main__':
                             note.get_sound().play(0, SOUND_PLAY_SEC)
                             time = int(1000 / (note.get_note() / 4)) # 4/4박자에서 4분음표 1초에 1개
                             pygame.time.delay(time)
-
                     print("재생 완료")
-
                 # ESC 키 : 프로그램 종료
                 if event.key == pygame.K_ESCAPE:
                     print("\n[PIANOTE] Pianote GUI 종료")
